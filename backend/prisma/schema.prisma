@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Training {
+  id        String           @id @default(uuid())
+  name      String
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  modules   TrainingModule[]
+}
+
+model TrainingModule {
+  id            String   @id @default(uuid())
+  title         String
+  weekendNumber Int
+  startDate     DateTime @db.Date
+  endDate       DateTime @db.Date
+  timezone      String   @default("America/Los_Angeles")
+  zoomTopic     String?
+  zoomMeetingId String?
+  zoomPasscode  String?
+  trainingId    String
+  training      Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+  days          Day[]
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("training_modules")
+}
+
+model Day {
+  id           String     @id @default(uuid())
+  date         DateTime   @db.Date
+  weekday      String
+  startMinutes Int
+  endMinutes   Int
+  moduleId     String
+  module       TrainingModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  activities   Activity[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([moduleId])
+}
+
+enum ActivityKind {
+  STAFF
+  LOGISTICS
+  MEDITATION
+  TALK
+  EXERCISE
+  BREAKOUT
+  BREAK
+  DEMO
+  PRACTICE
+  GAME
+  SHARING
+  CLOSING
+  OTHER
+}
+
+model Activity {
+  id            String       @id @default(uuid())
+  title         String
+  startMinutes  Int
+  endMinutes    Int
+  kind          ActivityKind @default(OTHER)
+  room          String?
+  facilitator   String?
+  breakoutNotes String?
+  notes         String?
+  dayId         String
+  day           Day          @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([dayId, startMinutes])
+}
