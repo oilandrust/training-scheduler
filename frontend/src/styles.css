@@ -300,7 +300,7 @@ textarea {
 .activity-block,
 .activity-ghost {
   position: absolute;
-  border-radius: 12px;
+  border-radius: 6px;
   border: 1px solid transparent;
   padding: 6px 10px 10px;
   text-align: left;
