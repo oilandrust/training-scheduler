@@ -79,10 +79,19 @@ chmod +x deploy/remote-deploy.sh
   npm prune --omit=dev
 )
 sudo systemctl restart training-scheduler
-sleep 1
-curl -fsS http://127.0.0.1:3000/api/health
-echo
-echo "Bootstrap deploy complete: $(git rev-parse --short HEAD)"
+echo "==> Waiting for API"
+for i in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
+  if curl -fsS http://127.0.0.1:3000/api/health >/dev/null 2>&1; then
+    curl -fsS http://127.0.0.1:3000/api/health
+    echo
+    echo "Bootstrap deploy complete: $(git rev-parse --short HEAD)"
+    exit 0
+  fi
+  sleep 1
+done
+echo "error: API did not become healthy" >&2
+sudo systemctl --no-pager --full status training-scheduler | head -40 >&2 || true
+exit 1
 EOF
 
 echo "Done. Next deploys: ./deploy/deploy.sh (after git push)"

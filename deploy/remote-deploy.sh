@@ -109,7 +109,17 @@ else
 fi
 
 echo "==> Health check"
-curl -fsS "http://127.0.0.1:3000/api/health" >/dev/null
-echo "ok"
+for i in 1 2 3 4 5 6 7 8 9 10; do
+  if curl -fsS "http://127.0.0.1:3000/api/health" >/dev/null 2>&1; then
+    echo "ok"
+    break
+  fi
+  if [[ "$i" -eq 10 ]]; then
+    echo "error: API did not become healthy" >&2
+    sudo systemctl --no-pager --full status "$SERVICE" | head -30 >&2 || true
+    exit 1
+  fi
+  sleep 1
+done
 
 echo "Deploy complete: $(git rev-parse --short HEAD)"
