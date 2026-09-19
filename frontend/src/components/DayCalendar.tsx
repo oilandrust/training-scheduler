@@ -7,15 +7,18 @@ import {
   PX_PER_MINUTE,
   SNAP_MINUTES,
   clamp,
+  DEFAULT_TIMEZONE,
   formatTime,
   formatTimeShort,
   isSameCalendarDay,
   nowMinutes,
   snap,
+  timezoneAbbreviation,
 } from '../lib/time';
 
 type Props = {
   date: string;
+  timezone?: string;
   startMinutes: number;
   endMinutes: number;
   activities: Activity[];
@@ -47,6 +50,7 @@ type DragState =
 
 export function DayCalendar({
   date,
+  timezone = DEFAULT_TIMEZONE,
   startMinutes,
   endMinutes,
   activities,
@@ -58,14 +62,27 @@ export function DayCalendar({
   const gridRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<DragState | null>(null);
   const [drag, setDragState] = useState<DragState | null>(null);
+  const [, setNowTick] = useState(0);
 
   function setDrag(next: DragState | null) {
     dragRef.current = next;
     setDragState(next);
   }
 
-  const rangeStart = Math.floor(startMinutes / 60) * 60;
-  const rangeEnd = Math.max(rangeStart + 60, Math.ceil(endMinutes / 60) * 60);
+  useEffect(() => {
+    const id = window.setInterval(() => setNowTick((tick) => tick + 1), 30_000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  const showNow = isSameCalendarDay(date, timezone);
+  const now = nowMinutes(timezone);
+  const tzLabel = timezoneAbbreviation(timezone);
+
+  const rangeStart = Math.floor((showNow ? Math.min(startMinutes, now) : startMinutes) / 60) * 60;
+  const rangeEnd = Math.max(
+    rangeStart + 60,
+    Math.ceil((showNow ? Math.max(endMinutes, now + 1) : endMinutes) / 60) * 60,
+  );
   const totalMinutes = rangeEnd - rangeStart;
   const hours = useMemo(() => {
     const values: number[] = [];
@@ -171,9 +188,6 @@ export function DayCalendar({
     return { start, end: Math.min(end, rangeEnd) };
   })();
 
-  const showNow = isSameCalendarDay(date);
-  const now = nowMinutes();
-
   return (
     <div className="calendar">
       <div className="calendar-body" style={{ height: totalMinutes * PX_PER_MINUTE }}>
@@ -214,6 +228,9 @@ export function DayCalendar({
           {showNow && now >= rangeStart && now <= rangeEnd && (
             <div className="now-line" style={{ top: (now - rangeStart) * PX_PER_MINUTE }}>
               <span />
+              <em>
+                {formatTime(now)} {tzLabel}
+              </em>
             </div>
           )}
           {ghost && (

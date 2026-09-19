@@ -229,6 +229,7 @@ export default function App() {
         </div>
         <DayCalendar
           date={selectedDay.date}
+          timezone={module.timezone}
           startMinutes={Math.min(
             selectedDay.startMinutes,
             ...activities.map((activity) => activity.startMinutes),

@@ -56,16 +56,48 @@ export function formatShortDate(isoDate: string) {
   return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
-export function nowMinutes() {
-  const now = new Date();
-  return now.getHours() * 60 + now.getMinutes();
+export const DEFAULT_TIMEZONE = 'America/Los_Angeles';
+
+function zonedParts(date = new Date(), timeZone = DEFAULT_TIMEZONE) {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23',
+    })
+      .formatToParts(date)
+      .map((part) => [part.type, part.value]),
+  );
+  return {
+    year: Number(parts.year),
+    month: Number(parts.month),
+    day: Number(parts.day),
+    hour: Number(parts.hour),
+    minute: Number(parts.minute),
+  };
 }
 
-export function isSameCalendarDay(isoDate: string, compare = new Date()) {
-  const date = new Date(`${isoDate.slice(0, 10)}T12:00:00`);
-  return (
-    date.getFullYear() === compare.getFullYear() &&
-    date.getMonth() === compare.getMonth() &&
-    date.getDate() === compare.getDate()
-  );
+export function nowMinutes(timeZone = DEFAULT_TIMEZONE) {
+  const { hour, minute } = zonedParts(new Date(), timeZone);
+  return hour * 60 + minute;
+}
+
+export function isSameCalendarDay(isoDate: string, timeZone = DEFAULT_TIMEZONE) {
+  const { year, month, day } = zonedParts(new Date(), timeZone);
+  const [isoYear, isoMonth, isoDay] = isoDate.slice(0, 10).split('-').map(Number);
+  return isoYear === year && isoMonth === month && isoDay === day;
+}
+
+export function timezoneAbbreviation(timeZone = DEFAULT_TIMEZONE) {
+  const label = new Intl.DateTimeFormat('en-US', {
+    timeZone,
+    timeZoneName: 'short',
+  })
+    .formatToParts(new Date())
+    .find((part) => part.type === 'timeZoneName')?.value;
+  return label ?? 'PT';
 }
