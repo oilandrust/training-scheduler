@@ -56,6 +56,14 @@ export function formatShortDate(isoDate: string) {
   return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
 }
 
+export function formatDuration(minutes: number) {
+  const total = Math.max(0, minutes);
+  if (total < 60) return `${total} min`;
+  const hours = Math.floor(total / 60);
+  const rest = total % 60;
+  return rest ? `${hours} hr ${rest} min` : `${hours} hr`;
+}
+
 export const DEFAULT_TIMEZONE = 'America/Los_Angeles';
 
 function zonedParts(date = new Date(), timeZone = DEFAULT_TIMEZONE) {

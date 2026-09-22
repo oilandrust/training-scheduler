@@ -80,24 +80,6 @@ textarea {
   text-transform: uppercase;
 }
 
-.zoom-chip {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 16px;
-  padding: 10px 14px;
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  box-shadow: var(--shadow);
-  font-size: 13px;
-  color: var(--muted);
-}
-
-.zoom-chip strong {
-  color: var(--ink);
-  font-weight: 650;
-}
-
 .sidebar {
   padding: 8px 18px 24px;
   display: flex;
@@ -323,10 +305,29 @@ textarea {
   border-width: 2px;
 }
 
+.activity-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  min-width: 0;
+}
+
 .activity-title {
   font-weight: 700;
   font-size: 13px;
   line-height: 1.25;
+  min-width: 0;
+  flex: 1;
+}
+
+.activity-duration {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 650;
+  opacity: 0.9;
+  line-height: 1.25;
+  white-space: nowrap;
 }
 
 .activity-time,
@@ -488,10 +489,6 @@ textarea {
     grid-template-rows: auto auto minmax(420px, 1fr) auto;
     height: auto;
     min-height: 100%;
-  }
-
-  .zoom-chip {
-    border-radius: 18px;
   }
 
   .day-list {

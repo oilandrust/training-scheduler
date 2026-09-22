@@ -201,13 +201,6 @@ export default function App() {
             <span>Module {module.weekendNumber}</span>
           </h1>
         </div>
-        {module.zoomMeetingId && (
-          <div className="zoom-chip">
-            <strong>{module.zoomTopic ?? 'Zoom'}</strong>
-            <span>ID {module.zoomMeetingId}</span>
-            {module.zoomPasscode && <span>Passcode {module.zoomPasscode}</span>}
-          </div>
-        )}
       </header>
 
       <DaySidebar

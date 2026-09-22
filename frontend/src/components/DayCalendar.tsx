@@ -8,6 +8,7 @@ import {
   SNAP_MINUTES,
   clamp,
   DEFAULT_TIMEZONE,
+  formatDuration,
   formatTime,
   formatTimeShort,
   isSameCalendarDay,
@@ -296,7 +297,8 @@ function ActivityBlock({
   onResizePointerDown,
 }: BlockProps) {
   const colors = KIND_META[activity.kind];
-  const height = Math.max(18, (activity.endMinutes - activity.startMinutes) * PX_PER_MINUTE);
+  const durationMinutes = activity.endMinutes - activity.startMinutes;
+  const height = Math.max(18, durationMinutes * PX_PER_MINUTE);
   const widthPct = 100 / activity.colCount;
   const showMeta = height > 36;
   const showRoom = height > 54 && Boolean(activity.room);
@@ -316,7 +318,10 @@ function ActivityBlock({
       }}
       onPointerDown={(event) => onMovePointerDown(event, activity)}
     >
-      <span className="activity-title">{activity.title}</span>
+      <span className="activity-top">
+        <span className="activity-title">{activity.title}</span>
+        <span className="activity-duration">{formatDuration(durationMinutes)}</span>
+      </span>
       {showMeta && (
         <span className="activity-time">
           {formatTime(activity.startMinutes)} – {formatTime(activity.endMinutes)}
