@@ -18,7 +18,7 @@ import { ScheduleEditor } from '../components/ScheduleEditor';
 import { locateInDriveUrl, type DriveOpenState, type ScheduleDocument } from '../drive/types';
 
 function parseDriveState(raw: string | null): DriveOpenState | null {
-  if (!raw) return null;
+  if (!raw || raw === '{state}') return null;
   try {
     return JSON.parse(raw) as DriveOpenState;
   } catch {
@@ -35,8 +35,18 @@ function resolveFileId(): string | null {
   const direct = params.get('fileId');
   if (direct) return direct;
   const state = parseDriveState(params.get('state'));
-  const fromIds = state?.ids?.[0] ?? state?.exportIds?.[0];
-  return fromIds ?? null;
+  if (!state) return null;
+  const ids = state.ids;
+  if (typeof ids === 'string' && ids.length > 0) {
+    return ids.split(',')[0]?.trim() || null;
+  }
+  if (Array.isArray(ids) && ids[0]) return ids[0];
+  const exportIds = state.exportIds;
+  if (typeof exportIds === 'string' && exportIds.length > 0) {
+    return exportIds.split(',')[0]?.trim() || null;
+  }
+  if (Array.isArray(exportIds) && exportIds[0]) return exportIds[0];
+  return null;
 }
 
 export default function DriveEditor() {
@@ -53,7 +63,12 @@ export default function DriveEditor() {
 
   const load = useCallback(async () => {
     if (!fileId) {
-      setError('Missing fileId. Open a schedule from Drive or the home page.');
+      const rawState = new URLSearchParams(window.location.search).get('state');
+      const hint =
+        rawState === '{state}'
+          ? 'Drive sent a literal “{state}”. In Cloud Console → Drive UI integration, set Open URL to https://training-scheduler.lefolio.fr/edit (no ?state={state}). Drive appends state automatically.'
+          : 'Missing fileId. Open a schedule from Drive or the home page.';
+      setError(hint);
       setLoading(false);
       return;
     }

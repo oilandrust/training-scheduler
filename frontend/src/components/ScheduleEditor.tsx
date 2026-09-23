@@ -1,8 +1,13 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { DayCalendar } from './DayCalendar';
+import { DayCalendar, type ClockMode } from './DayCalendar';
 import { DaySidebar } from './DaySidebar';
 import { DetailsPanel } from './DetailsPanel';
-import { formatDateLabel } from '../lib/time';
+import {
+  formatDateLabel,
+  getBrowserTimeZone,
+  timeZonesAreDifferent,
+  timezoneAbbreviation,
+} from '../lib/time';
 import type { Activity, TrainingModule } from '../types';
 
 export type ScheduleEditorProps = {
@@ -32,6 +37,9 @@ export function ScheduleEditor({
 }: ScheduleEditorProps) {
   const [selectedDayId, setSelectedDayId] = useState<string | null>(module.days[0]?.id ?? null);
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
+  const localTimezone = useMemo(() => getBrowserTimeZone(), []);
+  const showTzToggle = timeZonesAreDifferent(module.timezone, localTimezone);
+  const [clockMode, setClockMode] = useState<ClockMode>('training');
 
   useEffect(() => {
     if (!module.days.some((day) => day.id === selectedDayId)) {
@@ -47,6 +55,9 @@ export function ScheduleEditor({
 
   const activities = selectedDay?.activities ?? [];
   const selectedActivity = activities.find((activity) => activity.id === selectedActivityId) ?? null;
+
+  const trainingLabel = timezoneAbbreviation(module.timezone);
+  const localLabel = timezoneAbbreviation(localTimezone);
 
   const handleCreate = useCallback(
     async (startMinutes: number, endMinutes: number) => {
@@ -115,10 +126,35 @@ export function ScheduleEditor({
             <h2>{selectedDay.weekday}</h2>
             <p>{formatDateLabel(selectedDay.date)}</p>
           </div>
-          {error && <p className="inline-error">{error}</p>}
+          <div className="main-header-actions">
+            {showTzToggle && (
+              <div className="tz-toggle" role="group" aria-label="Clock timezone">
+                <button
+                  type="button"
+                  className={clockMode === 'training' ? 'active' : ''}
+                  onClick={() => setClockMode('training')}
+                  title={`Training time (${module.timezone})`}
+                >
+                  {trainingLabel}
+                </button>
+                <button
+                  type="button"
+                  className={clockMode === 'local' ? 'active' : ''}
+                  onClick={() => setClockMode('local')}
+                  title={`Your local time (${localTimezone})`}
+                >
+                  {localLabel}
+                </button>
+              </div>
+            )}
+            {error && <p className="inline-error">{error}</p>}
+          </div>
         </div>
         <DayCalendar
           timezone={module.timezone}
+          localTimezone={localTimezone}
+          date={selectedDay.date}
+          clockMode={showTzToggle ? clockMode : 'training'}
           startMinutes={Math.min(
             selectedDay.startMinutes,
             ...activities.map((activity) => activity.startMinutes),

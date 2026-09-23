@@ -8,6 +8,7 @@ import {
   SNAP_MINUTES,
   clamp,
   DEFAULT_TIMEZONE,
+  convertWallMinutes,
   formatDuration,
   formatTime,
   formatTimeShort,
@@ -16,8 +17,15 @@ import {
   timezoneAbbreviation,
 } from '../lib/time';
 
+export type ClockMode = 'training' | 'local';
+
 type Props = {
   timezone?: string;
+  /** IANA zone for the viewer's machine (used when clockMode is local). */
+  localTimezone?: string;
+  /** Calendar day YYYY-MM-DD — needed to convert wall times across zones. */
+  date: string;
+  clockMode?: ClockMode;
   startMinutes: number;
   endMinutes: number;
   activities: Activity[];
@@ -49,6 +57,9 @@ type DragState =
 
 export function DayCalendar({
   timezone = DEFAULT_TIMEZONE,
+  localTimezone = timezone,
+  date,
+  clockMode = 'training',
   startMinutes,
   endMinutes,
   activities,
@@ -62,6 +73,18 @@ export function DayCalendar({
   const [drag, setDragState] = useState<DragState | null>(null);
   const [, setNowTick] = useState(0);
 
+  const displayTz = clockMode === 'local' ? localTimezone : timezone;
+  const toDisplay = useCallback(
+    (minutes: number) =>
+      clockMode === 'local' ? convertWallMinutes(date, minutes, timezone, localTimezone) : minutes,
+    [clockMode, date, localTimezone, timezone],
+  );
+  const toTraining = useCallback(
+    (minutes: number) =>
+      clockMode === 'local' ? convertWallMinutes(date, minutes, localTimezone, timezone) : minutes,
+    [clockMode, date, localTimezone, timezone],
+  );
+
   function setDrag(next: DragState | null) {
     dragRef.current = next;
     setDragState(next);
@@ -72,14 +95,26 @@ export function DayCalendar({
     return () => window.clearInterval(id);
   }, []);
 
-  const now = nowMinutes(timezone);
-  const tzLabel = timezoneAbbreviation(timezone);
+  const now = nowMinutes(displayTz);
+  const tzLabel = timezoneAbbreviation(displayTz);
   const showNow = now >= 0 && now < 24 * 60;
 
-  const rangeStart = Math.floor(Math.min(startMinutes, now) / 60) * 60;
+  const displayStart = toDisplay(startMinutes);
+  const displayEnd = toDisplay(endMinutes);
+  const displayActivities = useMemo(
+    () =>
+      activities.map((activity) => ({
+        ...activity,
+        startMinutes: toDisplay(activity.startMinutes),
+        endMinutes: toDisplay(activity.endMinutes),
+      })),
+    [activities, toDisplay],
+  );
+
+  const rangeStart = Math.floor(Math.min(displayStart, now) / 60) * 60;
   const rangeEnd = Math.max(
     rangeStart + 60,
-    Math.ceil(Math.max(endMinutes, now + 1) / 60) * 60,
+    Math.ceil(Math.max(displayEnd, now + 1) / 60) * 60,
   );
   const totalMinutes = rangeEnd - rangeStart;
   const hours = useMemo(() => {
@@ -89,8 +124,8 @@ export function DayCalendar({
   }, [rangeStart, rangeEnd]);
 
   const preview = useMemo(() => {
-    if (!drag || drag.mode === 'create') return activities;
-    return activities.map((activity) => {
+    if (!drag || drag.mode === 'create') return displayActivities;
+    return displayActivities.map((activity) => {
       if (activity.id !== drag.id) return activity;
       if (drag.mode === 'move') {
         return {
@@ -104,7 +139,7 @@ export function DayCalendar({
         endMinutes: Math.max(activity.startMinutes + SNAP_MINUTES, drag.currentEnd),
       };
     });
-  }, [activities, drag]);
+  }, [displayActivities, drag]);
 
   const laidOut = useMemo(() => layoutActivities(preview), [preview]);
 
@@ -148,11 +183,15 @@ export function DayCalendar({
         const start = Math.min(current.origin, current.current);
         const rawEnd = Math.max(current.origin, current.current);
         const end = rawEnd - start < SNAP_MINUTES ? start + DEFAULT_DURATION : rawEnd;
-        onCreate(start, Math.min(end, rangeEnd));
+        onCreate(toTraining(start), toTraining(Math.min(end, rangeEnd)));
       } else if (current.mode === 'move') {
-        onMove(current.id, current.offset, current.offset + current.duration);
+        onMove(
+          current.id,
+          toTraining(current.offset),
+          toTraining(current.offset + current.duration),
+        );
       } else {
-        onMove(current.id, current.startMinutes, current.currentEnd);
+        onMove(current.id, toTraining(current.startMinutes), toTraining(current.currentEnd));
       }
     };
 
@@ -164,7 +203,7 @@ export function DayCalendar({
       window.removeEventListener('pointerup', onUp);
       window.removeEventListener('pointercancel', onUp);
     };
-  }, [minutesFromClientY, onCreate, onMove, rangeEnd, rangeStart]);
+  }, [minutesFromClientY, onCreate, onMove, rangeEnd, rangeStart, toTraining]);
 
   function onGridPointerDown(event: ReactPointerEvent<HTMLDivElement>) {
     const target = event.target as HTMLElement;
@@ -197,7 +236,7 @@ export function DayCalendar({
               style={{ top: (hour - rangeStart) * PX_PER_MINUTE }}
             >
               {formatTimeShort(hour)}
-              <span>{Math.floor(hour / 60) >= 12 ? 'PM' : 'AM'}</span>
+              <span>{Math.floor((((hour % (24 * 60)) + 24 * 60) % (24 * 60)) / 60) >= 12 ? 'PM' : 'AM'}</span>
             </div>
           ))}
         </div>

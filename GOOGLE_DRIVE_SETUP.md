@@ -55,12 +55,15 @@ Set:
 | Setting | Value |
 | --- | --- |
 | Application name | `Training Scheduler` |
-| Open URL | `https://training-scheduler.lefolio.fr/edit?state={state}` |
+| Open URL | `https://training-scheduler.lefolio.fr/edit` |
 | Create URL | `https://training-scheduler.lefolio.fr/new` |
 | Default MIME types | `application/vnd.lefolio.schedule+json` |
 | Default file extensions | `schedule` |
 
-Keep `{state}` literally in the Open URL — Drive replaces it with URL-encoded JSON that includes the file id(s).
+**Do not** put `?state={state}` in the Open URL. `{state}` is not a template variable Drive replaces — it stays literal and the app gets no file id. Drive [appends](https://developers.google.com/workspace/drive/api/guides/enable-sdk) `?state=…` (URL-encoded JSON with `ids`, `action`, etc.) for you.
+
+Wrong: `https://training-scheduler.lefolio.fr/edit?state={state}`  
+Right: `https://training-scheduler.lefolio.fr/edit`
 
 ### Application icons
 
@@ -78,11 +81,7 @@ Upload PNGs from [`assets/icons/`](assets/icons/) (transparent background, Hakom
 
 Drive UI integration typically asks for **16, 32, 48, 128, and 256**. Source master: `assets/icons/icon-1024.png`.
 
-**Use the deployed HTTPS URL** for Open-with from [drive.google.com](https://drive.google.com). Localhost only works if you temporarily set:
-
-`http://localhost:5173/edit?state={state}`
-
-…and you open the file on the same machine where Vite is running. The production frontend must be deployed so `/edit` exists on that host.
+**Use the deployed HTTPS URL** for Open-with from [drive.google.com](https://drive.google.com). `localhost` is not accepted for Open URL. The production frontend must be deployed so `/edit` exists on that host.
 
 ### Install the app once (required)
 

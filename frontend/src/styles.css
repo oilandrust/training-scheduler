@@ -161,6 +161,7 @@ textarea {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  gap: 16px;
   padding: 18px 24px 12px;
   border-bottom: 1px solid var(--line);
 }
@@ -174,6 +175,45 @@ textarea {
 .main-header p {
   margin: 0;
   color: var(--muted);
+}
+
+.main-header-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.tz-toggle {
+  display: inline-flex;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #f7efe6;
+  gap: 2px;
+}
+
+.tz-toggle button {
+  border: none;
+  background: transparent;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.tz-toggle button.active {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 3px rgba(84, 42, 24, 0.12);
+}
+
+.tz-toggle button:hover:not(.active) {
+  color: var(--ink);
 }
 
 .inline-error {

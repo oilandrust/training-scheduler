@@ -53,8 +53,8 @@ export function locateInDriveUrl(meta: Pick<DriveFileMeta, 'id' | 'parents'>): s
 
 /** Payload Google Drive passes via `?state=` on Open with / New. */
 export type DriveOpenState = {
-  ids?: string[];
+  ids?: string[] | string;
   action?: string;
   userId?: string;
-  exportIds?: string[];
+  exportIds?: string[] | string;
 };

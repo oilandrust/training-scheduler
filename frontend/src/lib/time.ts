@@ -7,17 +7,18 @@ export function pad(value: number) {
 }
 
 export function formatTime(minutes: number) {
-  const clamped = Math.max(0, Math.min(24 * 60, minutes));
-  const hour24 = Math.floor(clamped / 60) % 24;
-  const mins = clamped % 60;
+  const tod = ((Math.round(minutes) % (24 * 60)) + 24 * 60) % (24 * 60);
+  const hour24 = Math.floor(tod / 60);
+  const mins = tod % 60;
   const suffix = hour24 >= 12 ? 'PM' : 'AM';
   const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
   return mins === 0 ? `${hour12} ${suffix}` : `${hour12}:${pad(mins)} ${suffix}`;
 }
 
 export function formatTimeShort(minutes: number) {
-  const hour24 = Math.floor(minutes / 60) % 24;
-  const mins = minutes % 60;
+  const tod = ((Math.round(minutes) % (24 * 60)) + 24 * 60) % (24 * 60);
+  const hour24 = Math.floor(tod / 60);
+  const mins = tod % 60;
   const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12;
   return mins === 0 ? `${hour12}` : `${hour12}:${pad(mins)}`;
 }
@@ -89,6 +90,63 @@ function zonedParts(date = new Date(), timeZone = DEFAULT_TIMEZONE) {
   };
 }
 
+export function getBrowserTimeZone(): string {
+  try {
+    return Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  } catch {
+    return 'UTC';
+  }
+}
+
+/** True when the two IANA zones show a different offset (right now). */
+export function timeZonesAreDifferent(a: string, b: string): boolean {
+  if (a === b) return false;
+  return nowMinutes(a) !== nowMinutes(b) || timezoneAbbreviation(a) !== timezoneAbbreviation(b);
+}
+
+/** Interpret wall-clock minutes on `dateYmd` in `timeZone` as a UTC instant. */
+function wallClockToUtc(dateYmd: string, minutes: number, timeZone: string): Date {
+  const [y, mo, d] = dateYmd.slice(0, 10).split('-').map(Number);
+  const dayOffset = Math.floor(minutes / (24 * 60));
+  const tod = ((minutes % (24 * 60)) + 24 * 60) % (24 * 60);
+  const h = Math.floor(tod / 60);
+  const mi = tod % 60;
+  const base = new Date(Date.UTC(y, mo - 1, d + dayOffset, h, mi, 0));
+
+  let utcMs = base.getTime();
+  for (let i = 0; i < 3; i++) {
+    const parts = zonedParts(new Date(utcMs), timeZone);
+    const asUtc = Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute);
+    const want = Date.UTC(y, mo - 1, d + dayOffset, h, mi);
+    utcMs += want - asUtc;
+  }
+  return new Date(utcMs);
+}
+
+function utcToWallMinutes(utc: Date, timeZone: string, anchorYmd: string): number {
+  const parts = zonedParts(utc, timeZone);
+  const [ay, am, ad] = anchorYmd.slice(0, 10).split('-').map(Number);
+  const anchorUtc = Date.UTC(ay, am - 1, ad);
+  const wallUtc = Date.UTC(parts.year, parts.month - 1, parts.day);
+  const dayDelta = Math.round((wallUtc - anchorUtc) / 86_400_000);
+  return dayDelta * 24 * 60 + parts.hour * 60 + parts.minute;
+}
+
+/**
+ * Convert wall-clock minutes from one IANA zone to another on a training calendar date.
+ * Result may be outside 0–1440 when the local day differs.
+ */
+export function convertWallMinutes(
+  dateYmd: string,
+  minutes: number,
+  fromTz: string,
+  toTz: string,
+): number {
+  if (fromTz === toTz) return minutes;
+  const utc = wallClockToUtc(dateYmd, minutes, fromTz);
+  return utcToWallMinutes(utc, toTz, dateYmd);
+}
+
 export function nowMinutes(timeZone = DEFAULT_TIMEZONE) {
   const { hour, minute } = zonedParts(new Date(), timeZone);
   return hour * 60 + minute;
@@ -101,11 +159,15 @@ export function isSameCalendarDay(isoDate: string, timeZone = DEFAULT_TIMEZONE) 
 }
 
 export function timezoneAbbreviation(timeZone = DEFAULT_TIMEZONE) {
-  const label = new Intl.DateTimeFormat('en-US', {
-    timeZone,
-    timeZoneName: 'short',
-  })
-    .formatToParts(new Date())
-    .find((part) => part.type === 'timeZoneName')?.value;
-  return label ?? 'PT';
+  const now = new Date();
+  const candidates = ['en-US', 'en-GB', 'de-DE', 'fr-FR'].map(
+    (locale) =>
+      new Intl.DateTimeFormat(locale, { timeZone, timeZoneName: 'short' })
+        .formatToParts(now)
+        .find((part) => part.type === 'timeZoneName')?.value,
+  );
+  const named = candidates.find(
+    (label) => label && !/^(GMT|UTC)/i.test(label),
+  );
+  return named ?? candidates.find(Boolean) ?? 'TZ';
 }
