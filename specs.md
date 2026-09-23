@@ -9,3 +9,11 @@ Whe should be able to select a particular day, then it would show a calendar-lik
 I have included a pdf of such schedule made in a google sheet, please use this data to settup the schema and populate base data. We can use vite and react for frontend
 
 Prisma schema for the db, nodejs backend
+NestJS 10 + TypeScript
+Express (@nestjs/platform-express)
+Prisma 6 ORM
+PostgreSQL
+
+Don't worry about users an authentication yet, whoever is browsing can edit everything
+
+Right now just build the day detail page, on the left we have a panel with the days "friday, saturday, Sunday", we can chose one, and it displays the schedule on the center panel, and if we click an activity there is the details view that we can edit, make it look user friendly like google calendar, with rounded cards for the events and relatively warm saturated colors

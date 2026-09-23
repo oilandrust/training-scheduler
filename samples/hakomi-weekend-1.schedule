@@ -1,0 +1,532 @@
+{
+  "version": 1,
+  "title": "Zoom Weekend #1",
+  "timezone": "America/Los_Angeles",
+  "weekendNumber": 1,
+  "startDate": "2026-09-18",
+  "endDate": "2026-09-20",
+  "days": [
+    {
+      "id": "day-fri",
+      "date": "2026-09-18",
+      "weekday": "Friday",
+      "startMinutes": 690,
+      "endMinutes": 1080,
+      "activities": [
+        {
+          "id": "fri-a0",
+          "title": "Staff Meeting",
+          "startMinutes": 690,
+          "endMinutes": 750,
+          "kind": "STAFF",
+          "room": "Staff / Green Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "fri-a1",
+          "title": "Staff log onto the training Zoom",
+          "startMinutes": 765,
+          "endMinutes": 780,
+          "kind": "LOGISTICS",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": "Staff log onto the training Zoom link and take a short break before participants arrive."
+        },
+        {
+          "id": "fri-a2",
+          "title": "Welcome and overview of the weekend",
+          "startMinutes": 780,
+          "endMinutes": 795,
+          "kind": "LOGISTICS",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": "Welcome, overview of the weekend, and logistics."
+        },
+        {
+          "id": "fri-a3",
+          "title": "Heart Meditation",
+          "startMinutes": 795,
+          "endMinutes": 825,
+          "kind": "MEDITATION",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "fri-a4",
+          "title": "Homegroups",
+          "startMinutes": 825,
+          "endMinutes": 855,
+          "kind": "BREAKOUT",
+          "room": "Breakout",
+          "facilitator": null,
+          "breakoutNotes": "Homegroups (4s)",
+          "notes": "Each person talks about their intentions for the training, what is most important to know about them, and any fears they have."
+        },
+        {
+          "id": "fri-a5",
+          "title": "Large group — therapeutic superpower",
+          "startMinutes": 855,
+          "endMinutes": 860,
+          "kind": "SHARING",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "fri-a6",
+          "title": "Logistics",
+          "startMinutes": 860,
+          "endMinutes": 870,
+          "kind": "LOGISTICS",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "fri-a7",
+          "title": "Mindfulness",
+          "startMinutes": 870,
+          "endMinutes": 880,
+          "kind": "MEDITATION",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": "Main, then groups of two",
+          "notes": null
+        },
+        {
+          "id": "fri-a8",
+          "title": "Break",
+          "startMinutes": 880,
+          "endMinutes": 895,
+          "kind": "BREAK",
+          "room": "N/A",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "fri-a9",
+          "title": "Organicity",
+          "startMinutes": 895,
+          "endMinutes": 910,
+          "kind": "TALK",
+          "room": "Main Room",
+          "facilitator": "Tara?",
+          "breakoutNotes": "Main, then dyads",
+          "notes": null
+        },
+        {
+          "id": "fri-a10",
+          "title": "Body–mind holism",
+          "startMinutes": 910,
+          "endMinutes": 930,
+          "kind": "EXERCISE",
+          "room": "Main Room",
+          "facilitator": "Rob",
+          "breakoutNotes": null,
+          "notes": "Exercises like jaw forward, shoulder burdened, slow breathing. Prompts: I am unsafe. It’s all my fault. I am loved for who I am."
+        },
+        {
+          "id": "fri-a11",
+          "title": "Non-violence discussion",
+          "startMinutes": 930,
+          "endMinutes": 945,
+          "kind": "TALK",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "fri-a12",
+          "title": "Unity",
+          "startMinutes": 945,
+          "endMinutes": 960,
+          "kind": "EXERCISE",
+          "room": "Main Room",
+          "facilitator": "Rob",
+          "breakoutNotes": null,
+          "notes": "Imagine a table with all your parts and how they get along. Write dialogue."
+        },
+        {
+          "id": "fri-a13",
+          "title": "Break",
+          "startMinutes": 960,
+          "endMinutes": 975,
+          "kind": "BREAK",
+          "room": "N/A",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "fri-a14",
+          "title": "Talk: Being a therapist, client, and observer",
+          "startMinutes": 975,
+          "endMinutes": 985,
+          "kind": "TALK",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "fri-a15",
+          "title": "Talk and exercise: Barriers of the Heart",
+          "startMinutes": 985,
+          "endMinutes": 1020,
+          "kind": "EXERCISE",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "fri-a16",
+          "title": "Sharing on Perfect Therapist",
+          "startMinutes": 1020,
+          "endMinutes": 1035,
+          "kind": "SHARING",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "fri-a17",
+          "title": "Poem: Kindness",
+          "startMinutes": 1045,
+          "endMinutes": 1050,
+          "kind": "CLOSING",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "fri-a18",
+          "title": "Staff check-in",
+          "startMinutes": 1050,
+          "endMinutes": 1080,
+          "kind": "STAFF",
+          "room": "Staff / Green Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": "Stay logged into the Zoom link and move to the staff room."
+        }
+      ]
+    },
+    {
+      "id": "day-sat",
+      "date": "2026-09-19",
+      "weekday": "Saturday",
+      "startMinutes": 540,
+      "endMinutes": 870,
+      "activities": [
+        {
+          "id": "sat-a0",
+          "title": "Meditation on finding an ally or Heart Lotus",
+          "startMinutes": 540,
+          "endMinutes": 570,
+          "kind": "MEDITATION",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "sat-a1",
+          "title": "Talk about upsets",
+          "startMinutes": 570,
+          "endMinutes": 585,
+          "kind": "TALK",
+          "room": "Main Room",
+          "facilitator": "Tara",
+          "breakoutNotes": null,
+          "notes": "If germane, add in a principle or two that might be useful with upsets. Tara reads a poem and talks about how to get support to process ruptures and upsets. How accountability looks and how to be in the principles with it. How to attend and be aware of the dynamics of social location in upsets."
+        },
+        {
+          "id": "sat-a2",
+          "title": "Exercise: How do you organize around upsets",
+          "startMinutes": 585,
+          "endMinutes": 600,
+          "kind": "EXERCISE",
+          "room": "Main Room",
+          "facilitator": "Rob",
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "sat-a3",
+          "title": "Share with partner",
+          "startMinutes": 600,
+          "endMinutes": 630,
+          "kind": "BREAKOUT",
+          "room": "Breakout",
+          "facilitator": null,
+          "breakoutNotes": "Dyads",
+          "notes": null
+        },
+        {
+          "id": "sat-a4",
+          "title": "Break",
+          "startMinutes": 630,
+          "endMinutes": 645,
+          "kind": "BREAK",
+          "room": "N/A",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "sat-a5",
+          "title": "Talk — Review of Tracking",
+          "startMinutes": 645,
+          "endMinutes": 660,
+          "kind": "TALK",
+          "room": "Main Room",
+          "facilitator": "Tara",
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "sat-a6",
+          "title": "Exercise: name, origin, or a children’s song",
+          "startMinutes": 660,
+          "endMinutes": 690,
+          "kind": "EXERCISE",
+          "room": "Main Room",
+          "facilitator": "Tara?",
+          "breakoutNotes": null,
+          "notes": "A few people say their name and where they are from. Or: Mary had a little lamb, or another culture’s children’s song."
+        },
+        {
+          "id": "sat-a7",
+          "title": "Demo: tracking",
+          "startMinutes": 690,
+          "endMinutes": 735,
+          "kind": "DEMO",
+          "room": "Main Room",
+          "facilitator": "Rob",
+          "breakoutNotes": null,
+          "notes": "Karen to annotate in the chat."
+        },
+        {
+          "id": "sat-a8",
+          "title": "Debrief",
+          "startMinutes": 735,
+          "endMinutes": 750,
+          "kind": "SHARING",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "sat-a9",
+          "title": "Game: I’ve Got the Orange",
+          "startMinutes": 750,
+          "endMinutes": 765,
+          "kind": "GAME",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "sat-a10",
+          "title": "Practice sessions — tracking",
+          "startMinutes": 765,
+          "endMinutes": 810,
+          "kind": "PRACTICE",
+          "room": "Breakout",
+          "facilitator": null,
+          "breakoutNotes": "Groups of 4 or 5",
+          "notes": "One person talks for five minutes to the group. Observers write what they track other than content."
+        },
+        {
+          "id": "sat-a11",
+          "title": "Debrief and Q&A",
+          "startMinutes": 810,
+          "endMinutes": 825,
+          "kind": "SHARING",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "sat-a12",
+          "title": "Talk: Organization of Experience",
+          "startMinutes": 825,
+          "endMinutes": 840,
+          "kind": "TALK",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "sat-a13",
+          "title": "Staff meeting if needed",
+          "startMinutes": 840,
+          "endMinutes": 870,
+          "kind": "STAFF",
+          "room": "Staff / Green Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": "This is often the longest debrief meeting — leave time for that."
+        }
+      ]
+    },
+    {
+      "id": "day-sun",
+      "date": "2026-09-20",
+      "weekday": "Sunday",
+      "startMinutes": 540,
+      "endMinutes": 810,
+      "activities": [
+        {
+          "id": "sun-a0",
+          "title": "Meditation: Organization of Experience",
+          "startMinutes": 540,
+          "endMinutes": 555,
+          "kind": "MEDITATION",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": "Looking at others, noticing sensations, body, attitude, contractions, energy, memories, etc. Or: Just Like Me."
+        },
+        {
+          "id": "sun-a1",
+          "title": "Sharing in dyads",
+          "startMinutes": 555,
+          "endMinutes": 565,
+          "kind": "BREAKOUT",
+          "room": "Breakout",
+          "facilitator": null,
+          "breakoutNotes": "Dyads",
+          "notes": null
+        },
+        {
+          "id": "sun-a2",
+          "title": "Form practice groups",
+          "startMinutes": 565,
+          "endMinutes": 570,
+          "kind": "LOGISTICS",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "sun-a3",
+          "title": "Review of contact",
+          "startMinutes": 570,
+          "endMinutes": 585,
+          "kind": "TALK",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "sun-a4",
+          "title": "Demo of contact",
+          "startMinutes": 585,
+          "endMinutes": 630,
+          "kind": "DEMO",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": "Karen to annotate in chat."
+        },
+        {
+          "id": "sun-a5",
+          "title": "Break",
+          "startMinutes": 630,
+          "endMinutes": 645,
+          "kind": "BREAK",
+          "room": "N/A",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "sun-a6",
+          "title": "Practice",
+          "startMinutes": 645,
+          "endMinutes": 720,
+          "kind": "PRACTICE",
+          "room": "Breakout",
+          "facilitator": null,
+          "breakoutNotes": "Groups of three plus assistant",
+          "notes": "Client talks about a real life issue. The observer writes down potential contact statements. Therapist makes contact with non-content elements. Assistant helps refine and stay away from content."
+        },
+        {
+          "id": "sun-a7",
+          "title": "Debriefing",
+          "startMinutes": 720,
+          "endMinutes": 735,
+          "kind": "SHARING",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "sun-a8",
+          "title": "Q&A",
+          "startMinutes": 735,
+          "endMinutes": 750,
+          "kind": "TALK",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        },
+        {
+          "id": "sun-a9",
+          "title": "Homegroups",
+          "startMinutes": 750,
+          "endMinutes": 770,
+          "kind": "BREAKOUT",
+          "room": "Breakout",
+          "facilitator": null,
+          "breakoutNotes": "Same homegroups as Friday",
+          "notes": "Participants talk about what they need to feel complete, what was difficult, and what inspired them."
+        },
+        {
+          "id": "sun-a10",
+          "title": "Closing remarks / preview next month",
+          "startMinutes": 770,
+          "endMinutes": 780,
+          "kind": "CLOSING",
+          "room": "Main Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": "Name the upcoming trainer. Remind students of the online learning platform and keeping up."
+        },
+        {
+          "id": "sun-a11",
+          "title": "Staff debrief",
+          "startMinutes": 780,
+          "endMinutes": 810,
+          "kind": "STAFF",
+          "room": "Staff / Green Room",
+          "facilitator": null,
+          "breakoutNotes": null,
+          "notes": null
+        }
+      ]
+    }
+  ]
+}
