@@ -31,8 +31,9 @@ type Props = {
   activities: Activity[];
   selectedId: string | null;
   onSelect: (id: string | null) => void;
-  onCreate: (startMinutes: number, endMinutes: number) => void;
-  onMove: (id: string, startMinutes: number, endMinutes: number) => void;
+  onCreate?: (startMinutes: number, endMinutes: number) => void;
+  onMove?: (id: string, startMinutes: number, endMinutes: number) => void;
+  readOnly?: boolean;
 };
 
 type DragState =
@@ -67,6 +68,7 @@ export function DayCalendar({
   onSelect,
   onCreate,
   onMove,
+  readOnly = false,
 }: Props) {
   const gridRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<DragState | null>(null);
@@ -179,19 +181,20 @@ export function DayCalendar({
       if (!current) return;
       dragRef.current = null;
       setDrag(null);
+      if (readOnly) return;
       if (current.mode === 'create') {
         const start = Math.min(current.origin, current.current);
         const rawEnd = Math.max(current.origin, current.current);
         const end = rawEnd - start < SNAP_MINUTES ? start + DEFAULT_DURATION : rawEnd;
-        onCreate(toTraining(start), toTraining(Math.min(end, rangeEnd)));
+        onCreate?.(toTraining(start), toTraining(Math.min(end, rangeEnd)));
       } else if (current.mode === 'move') {
-        onMove(
+        onMove?.(
           current.id,
           toTraining(current.offset),
           toTraining(current.offset + current.duration),
         );
       } else {
-        onMove(current.id, toTraining(current.startMinutes), toTraining(current.currentEnd));
+        onMove?.(current.id, toTraining(current.startMinutes), toTraining(current.currentEnd));
       }
     };
 
@@ -203,9 +206,10 @@ export function DayCalendar({
       window.removeEventListener('pointerup', onUp);
       window.removeEventListener('pointercancel', onUp);
     };
-  }, [minutesFromClientY, onCreate, onMove, rangeEnd, rangeStart, toTraining]);
+  }, [minutesFromClientY, onCreate, onMove, rangeEnd, rangeStart, readOnly, toTraining]);
 
   function onGridPointerDown(event: ReactPointerEvent<HTMLDivElement>) {
+    if (readOnly) return;
     const target = event.target as HTMLElement;
     if (!target.dataset.grid) return;
     const origin = clamp(
@@ -287,8 +291,11 @@ export function DayCalendar({
               activity={activity}
               rangeStart={rangeStart}
               selected={activity.id === selectedId}
+              readOnly={readOnly}
               onMovePointerDown={(event, current) => {
                 event.stopPropagation();
+                onSelect(current.id);
+                if (readOnly) return;
                 const minutes = minutesFromClientY(event.clientY);
                 setDrag({
                   mode: 'move',
@@ -297,10 +304,10 @@ export function DayCalendar({
                   duration: current.endMinutes - current.startMinutes,
                   grabOffset: minutes - current.startMinutes,
                 });
-                onSelect(current.id);
               }}
               onResizePointerDown={(event, current) => {
                 event.stopPropagation();
+                if (readOnly) return;
                 setDrag({
                   mode: 'resize',
                   id: current.id,
@@ -321,6 +328,7 @@ type BlockProps = {
   activity: LaidOutActivity;
   rangeStart: number;
   selected: boolean;
+  readOnly: boolean;
   onMovePointerDown: (event: ReactPointerEvent<HTMLButtonElement>, activity: Activity) => void;
   onResizePointerDown: (event: ReactPointerEvent<HTMLSpanElement>, activity: Activity) => void;
 };
@@ -329,6 +337,7 @@ function ActivityBlock({
   activity,
   rangeStart,
   selected,
+  readOnly,
   onMovePointerDown,
   onResizePointerDown,
 }: BlockProps) {
@@ -342,7 +351,7 @@ function ActivityBlock({
   return (
     <button
       type="button"
-      className={`activity-block ${selected ? 'selected' : ''}`}
+      className={`activity-block ${selected ? 'selected' : ''} ${readOnly ? 'readonly' : ''}`}
       style={{
         top: (activity.startMinutes - rangeStart) * PX_PER_MINUTE,
         height,
@@ -364,10 +373,12 @@ function ActivityBlock({
         </span>
       )}
       {showRoom && <span className="activity-room">{activity.room}</span>}
-      <span
-        className="resize-handle"
-        onPointerDown={(event) => onResizePointerDown(event, activity)}
-      />
+      {!readOnly && (
+        <span
+          className="resize-handle"
+          onPointerDown={(event) => onResizePointerDown(event, activity)}
+        />
+      )}
     </button>
   );
 }

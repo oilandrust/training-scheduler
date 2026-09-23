@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { ActivitySummary } from './ActivitySummary';
 import { DayCalendar, type ClockMode } from './DayCalendar';
 import { DaySidebar } from './DaySidebar';
 import { DetailsPanel } from './DetailsPanel';
@@ -15,14 +16,15 @@ export type ScheduleEditorProps = {
   headerExtra?: ReactNode;
   eyebrow?: string;
   error?: string | null;
-  onCreate: (
+  readOnly?: boolean;
+  onCreate?: (
     dayId: string,
     startMinutes: number,
     endMinutes: number,
   ) => string | void | Promise<string | void>;
-  onMove: (id: string, startMinutes: number, endMinutes: number) => void | Promise<void>;
-  onChange: (id: string, patch: Partial<Activity>) => void | Promise<void>;
-  onDelete: (id: string) => void | Promise<void>;
+  onMove?: (id: string, startMinutes: number, endMinutes: number) => void | Promise<void>;
+  onChange?: (id: string, patch: Partial<Activity>) => void | Promise<void>;
+  onDelete?: (id: string) => void | Promise<void>;
 };
 
 export function ScheduleEditor({
@@ -30,6 +32,7 @@ export function ScheduleEditor({
   headerExtra,
   eyebrow,
   error,
+  readOnly = false,
   onCreate,
   onMove,
   onChange,
@@ -61,22 +64,23 @@ export function ScheduleEditor({
 
   const handleCreate = useCallback(
     async (startMinutes: number, endMinutes: number) => {
-      if (!selectedDay) return;
+      if (readOnly || !selectedDay || !onCreate) return;
       const createdId = await onCreate(selectedDay.id, startMinutes, endMinutes);
       if (createdId) setSelectedActivityId(createdId);
     },
-    [onCreate, selectedDay],
+    [onCreate, readOnly, selectedDay],
   );
 
   const handleDelete = useCallback(
     (id: string) => {
+      if (readOnly || !onDelete) return;
       const current = activities.find((activity) => activity.id === id);
       if (!current) return;
       if (!window.confirm(`Delete “${current.title}”?`)) return;
       setSelectedActivityId(null);
       void onDelete(id);
     },
-    [activities, onDelete],
+    [activities, onDelete, readOnly],
   );
 
   useEffect(() => {
@@ -85,14 +89,19 @@ export function ScheduleEditor({
       const typing =
         target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT';
       if (event.key === 'Escape') setSelectedActivityId(null);
-      if (!typing && selectedActivityId && (event.key === 'Backspace' || event.key === 'Delete')) {
+      if (
+        !readOnly &&
+        !typing &&
+        selectedActivityId &&
+        (event.key === 'Backspace' || event.key === 'Delete')
+      ) {
         event.preventDefault();
         handleDelete(selectedActivityId);
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [handleDelete, selectedActivityId]);
+  }, [handleDelete, readOnly, selectedActivityId]);
 
   if (!selectedDay) {
     return <div className="boot">No days in this schedule.</div>;
@@ -168,12 +177,21 @@ export function ScheduleEditor({
           activities={activities}
           selectedId={selectedActivityId}
           onSelect={setSelectedActivityId}
-          onCreate={handleCreate}
-          onMove={onMove}
+          onCreate={readOnly ? undefined : handleCreate}
+          onMove={readOnly ? undefined : onMove}
+          readOnly={readOnly}
         />
       </main>
 
-      <DetailsPanel activity={selectedActivity} onChange={onChange} onDelete={handleDelete} />
+      {readOnly ? (
+        <ActivitySummary activity={selectedActivity} />
+      ) : (
+        <DetailsPanel
+          activity={selectedActivity}
+          onChange={onChange ?? (() => undefined)}
+          onDelete={handleDelete}
+        />
+      )}
     </div>
   );
 }

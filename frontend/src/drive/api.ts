@@ -1,6 +1,6 @@
 import { requireAccessToken } from './auth';
 import { SCHEDULE_MIME } from './types';
-import type { DriveFileMeta, ScheduleDocument } from './types';
+import type { DriveFileMeta, DrivePermission, ScheduleDocument } from './types';
 import { serializeDocument } from './document';
 
 const DRIVE = 'https://www.googleapis.com/drive/v3';
@@ -30,9 +30,48 @@ export async function listSchedules(): Promise<DriveFileMeta[]> {
 }
 
 export async function getFileMeta(fileId: string): Promise<DriveFileMeta> {
-  const fields = encodeURIComponent('id,name,modifiedTime,webViewLink,parents');
+  const fields = encodeURIComponent(
+    'id,name,modifiedTime,webViewLink,parents,capabilities(canEdit,canShare)',
+  );
   const response = await driveFetch(`/files/${encodeURIComponent(fileId)}?fields=${fields}`);
   return (await response.json()) as DriveFileMeta;
+}
+
+const PERMISSION_FIELDS = 'permissions(id,type,role,emailAddress,displayName)';
+
+export async function listPermissions(fileId: string): Promise<DrivePermission[]> {
+  const response = await driveFetch(
+    `/files/${encodeURIComponent(fileId)}/permissions?fields=${encodeURIComponent(PERMISSION_FIELDS)}`,
+  );
+  const data = (await response.json()) as { permissions?: DrivePermission[] };
+  return data.permissions ?? [];
+}
+
+export async function createPermission(
+  fileId: string,
+  body: { type: 'user' | 'anyone'; role: 'reader' | 'writer'; emailAddress?: string },
+  notify = false,
+): Promise<DrivePermission> {
+  const params = new URLSearchParams({
+    fields: 'id,type,role,emailAddress,displayName',
+    sendNotificationEmail: notify ? 'true' : 'false',
+  });
+  const response = await driveFetch(
+    `/files/${encodeURIComponent(fileId)}/permissions?${params.toString()}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    },
+  );
+  return (await response.json()) as DrivePermission;
+}
+
+export async function deletePermission(fileId: string, permissionId: string): Promise<void> {
+  await driveFetch(
+    `/files/${encodeURIComponent(fileId)}/permissions/${encodeURIComponent(permissionId)}`,
+    { method: 'DELETE' },
+  );
 }
 
 export async function getFileContent(fileId: string): Promise<string> {

@@ -40,6 +40,18 @@ export type DriveFileMeta = {
   modifiedTime?: string;
   webViewLink?: string;
   parents?: string[];
+  capabilities?: {
+    canEdit?: boolean;
+    canShare?: boolean;
+  };
+};
+
+export type DrivePermission = {
+  id: string;
+  type: 'user' | 'group' | 'domain' | 'anyone';
+  role: 'owner' | 'organizer' | 'fileOrganizer' | 'writer' | 'commenter' | 'reader';
+  emailAddress?: string;
+  displayName?: string;
 };
 
 /** Open Drive UI on the file’s parent folder (or My Drive root). */

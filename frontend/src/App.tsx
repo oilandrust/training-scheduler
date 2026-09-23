@@ -2,6 +2,7 @@ import DbApp from './pages/DbApp';
 import DriveEditor from './pages/DriveEditor';
 import DriveHome from './pages/DriveHome';
 import DriveNew from './pages/DriveNew';
+import DriveViewer from './pages/DriveViewer';
 
 function currentPath(): string {
   return window.location.pathname.replace(/\/$/, '') || '/';
@@ -13,5 +14,6 @@ export default function App() {
   if (path === '/db') return <DbApp />;
   if (path === '/new') return <DriveNew />;
   if (path === '/edit') return <DriveEditor />;
+  if (path === '/view') return <DriveViewer />;
   return <DriveHome />;
 }

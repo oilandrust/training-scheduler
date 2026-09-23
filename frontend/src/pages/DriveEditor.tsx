@@ -14,52 +14,24 @@ import {
   parseDocument,
   updateActivityInDocument,
 } from '../drive/document';
+import { resolveFileId } from '../drive/open';
 import { ScheduleEditor } from '../components/ScheduleEditor';
-import { locateInDriveUrl, type DriveOpenState, type ScheduleDocument } from '../drive/types';
-
-function parseDriveState(raw: string | null): DriveOpenState | null {
-  if (!raw || raw === '{state}') return null;
-  try {
-    return JSON.parse(raw) as DriveOpenState;
-  } catch {
-    try {
-      return JSON.parse(decodeURIComponent(raw)) as DriveOpenState;
-    } catch {
-      return null;
-    }
-  }
-}
-
-function resolveFileId(): string | null {
-  const params = new URLSearchParams(window.location.search);
-  const direct = params.get('fileId');
-  if (direct) return direct;
-  const state = parseDriveState(params.get('state'));
-  if (!state) return null;
-  const ids = state.ids;
-  if (typeof ids === 'string' && ids.length > 0) {
-    return ids.split(',')[0]?.trim() || null;
-  }
-  if (Array.isArray(ids) && ids[0]) return ids[0];
-  const exportIds = state.exportIds;
-  if (typeof exportIds === 'string' && exportIds.length > 0) {
-    return exportIds.split(',')[0]?.trim() || null;
-  }
-  if (Array.isArray(exportIds) && exportIds[0]) return exportIds[0];
-  return null;
-}
+import { ShareControl } from '../components/ShareControl';
+import { locateInDriveUrl, type DriveFileMeta, type ScheduleDocument } from '../drive/types';
 
 export default function DriveEditor() {
   const fileId = useMemo(() => resolveFileId(), []);
   const [doc, setDoc] = useState<ScheduleDocument | null>(null);
-  const [fileName, setFileName] = useState('schedule.schedule');
-  const [locateLink, setLocateLink] = useState<string | null>(null);
+  const [meta, setMeta] = useState<DriveFileMeta | null>(null);
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [needsAuth, setNeedsAuth] = useState(false);
   const [gisReady, setGisReady] = useState(isGisReady());
+
+  const fileName = meta?.name ?? 'schedule.schedule';
+  const locateLink = meta ? locateInDriveUrl(meta) : null;
 
   const load = useCallback(async () => {
     if (!fileId) {
@@ -81,9 +53,12 @@ export default function DriveEditor() {
     setLoading(true);
     setError(null);
     try {
-      const [meta, raw] = await Promise.all([getFileMeta(fileId), getFileContent(fileId)]);
-      setFileName(meta.name);
-      setLocateLink(locateInDriveUrl(meta));
+      const [nextMeta, raw] = await Promise.all([getFileMeta(fileId), getFileContent(fileId)]);
+      if (nextMeta.capabilities?.canEdit === false) {
+        window.location.replace(`/view?fileId=${encodeURIComponent(fileId)}`);
+        return;
+      }
+      setMeta(nextMeta);
       setDoc(parseDocument(raw));
       setDirty(false);
     } catch (err) {
@@ -128,9 +103,8 @@ export default function DriveEditor() {
     setSaving(true);
     setError(null);
     try {
-      const meta = await updateFileContent(fileId, doc);
-      setFileName(meta.name);
-      if (meta.parents) setLocateLink(locateInDriveUrl(meta));
+      const nextMeta = await updateFileContent(fileId, doc);
+      setMeta((current) => ({ ...current, ...nextMeta }));
       setDirty(false);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Save failed');
@@ -185,7 +159,7 @@ export default function DriveEditor() {
     );
   }
 
-  if (!doc || !module) {
+  if (!doc || !module || !fileId) {
     return <div className="boot">No schedule loaded.</div>;
   }
 
@@ -200,11 +174,19 @@ export default function DriveEditor() {
           <button type="button" className="btn" disabled={saving || !dirty} onClick={() => void handleSave()}>
             {saving ? 'Saving…' : 'Save'}
           </button>
+          <ShareControl
+            fileId={fileId}
+            fileName={fileName}
+            canShare={meta?.capabilities?.canShare !== false}
+          />
           {locateLink && (
             <a className="topbar-link" href={locateLink} target="_blank" rel="noreferrer">
               Locate in Drive
             </a>
           )}
+          <a className="topbar-link" href={`/view?fileId=${encodeURIComponent(fileId)}`}>
+            View
+          </a>
           <a className="topbar-link" href="/">
             All schedules
           </a>
