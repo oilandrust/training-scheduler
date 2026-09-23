@@ -221,7 +221,6 @@ export default function App() {
           {error && <p className="inline-error">{error}</p>}
         </div>
         <DayCalendar
-          date={selectedDay.date}
           timezone={module.timezone}
           startMinutes={Math.min(
             selectedDay.startMinutes,

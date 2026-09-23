@@ -11,14 +11,12 @@ import {
   formatDuration,
   formatTime,
   formatTimeShort,
-  isSameCalendarDay,
   nowMinutes,
   snap,
   timezoneAbbreviation,
 } from '../lib/time';
 
 type Props = {
-  date: string;
   timezone?: string;
   startMinutes: number;
   endMinutes: number;
@@ -50,7 +48,6 @@ type DragState =
     };
 
 export function DayCalendar({
-  date,
   timezone = DEFAULT_TIMEZONE,
   startMinutes,
   endMinutes,
@@ -75,14 +72,14 @@ export function DayCalendar({
     return () => window.clearInterval(id);
   }, []);
 
-  const showNow = isSameCalendarDay(date, timezone);
   const now = nowMinutes(timezone);
   const tzLabel = timezoneAbbreviation(timezone);
+  const showNow = now >= 0 && now < 24 * 60;
 
-  const rangeStart = Math.floor((showNow ? Math.min(startMinutes, now) : startMinutes) / 60) * 60;
+  const rangeStart = Math.floor(Math.min(startMinutes, now) / 60) * 60;
   const rangeEnd = Math.max(
     rangeStart + 60,
-    Math.ceil((showNow ? Math.max(endMinutes, now + 1) : endMinutes) / 60) * 60,
+    Math.ceil(Math.max(endMinutes, now + 1) / 60) * 60,
   );
   const totalMinutes = rangeEnd - rangeStart;
   const hours = useMemo(() => {
