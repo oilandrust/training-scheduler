@@ -1,6 +1,10 @@
 import { SCHEDULE_MIME } from './types';
 
-const SCOPES = 'https://www.googleapis.com/auth/drive.file';
+const SCOPES = [
+  'https://www.googleapis.com/auth/drive.file',
+  // Required for the app to appear in Drive “Open with” / “New” menus.
+  'https://www.googleapis.com/auth/drive.install',
+].join(' ');
 const STORAGE_KEY = 'training-scheduler.drive.token';
 
 declare global {

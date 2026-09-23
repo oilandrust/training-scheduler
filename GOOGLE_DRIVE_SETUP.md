@@ -108,24 +108,40 @@ In-app list uses `/edit?fileId=…` instead.
 
 ### If Open with doesn’t show Training Scheduler
 
-- Drive UI integration saved with MIME + extension above  
-- Open URL is reachable HTTPS (or intentional localhost)  
-- You signed in once → app appears under Manage apps  
-- Your account is an OAuth **Test user** (while consent status is Testing)  
-- File MIME is `application/vnd.lefolio.schedule+json` (create via the app)  
-- Production build includes the `/edit` route  
+- [ ] Drive UI integration saved with MIME + extension above  
+- [ ] Open URL is reachable HTTPS (localhost is not accepted by Drive for Open URL)  
+- [ ] You signed in with **both** `drive.file` and `drive.install` (re-consent after scope change)  
+- [ ] App appears under Manage apps  
+- [ ] Your account is an OAuth **Test user** (while consent status is Testing)  
+- [ ] File MIME matches Default or Secondary types (create via the app)  
+- [ ] Production build includes the `/edit` route  
+- [ ] Application icons uploaded (optional; can take 24h; file list icons are often generic)  
 
 **New → Training Schedule** needs Create URL + default MIME/extension in the same form.
 
 ## 3. Scopes
 
-The prototype requests only:
+The app requests:
 
 ```text
 https://www.googleapis.com/auth/drive.file
+https://www.googleapis.com/auth/drive.install
 ```
 
-That covers files the user opens with the app or that the app creates. It does not list arbitrary Drive files.
+- `drive.file` — read/write files the app creates or the user opens with the app  
+- `drive.install` — **required** for Training Scheduler to appear in Drive’s **Open with** and **New** menus ([Google docs](https://developers.google.com/workspace/drive/api/guides/enable-sdk#drive.install))
+
+After adding `drive.install`, sign out in the app (or revoke access at [Google Account → Third-party access](https://myaccount.google.com/permissions)), then **Sign in** again so Google shows the install consent. Only then does Open with list the app.
+
+### Why files have no custom icon
+
+Google’s Drive UI integration notes that **document icons are deprecated**. The application icon (upload 16–256 PNGs on the same Drive Integration page) shows in Manage apps / Open with; most binary files still use a generic icon. Icon uploads can take **up to 24 hours** to appear.
+
+### MIME type tips
+
+Prefer schedules **created by the app** so MIME is `application/vnd.lefolio.schedule+json`. A file you upload manually may be stored as `application/json` or `application/octet-stream`, and Open with may not match Default MIME types. You can add `application/json` under **Secondary MIME types** if you need uploaded JSON to open in the app.
+
+Leave **Automatically show OAuth 2.0 consent screen** unchecked — Google marks that option deprecated; the app starts its own sign-in.
 
 ## 4. Manual test plan
 
