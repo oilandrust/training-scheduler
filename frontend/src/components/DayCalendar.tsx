@@ -56,6 +56,22 @@ type DragState =
       current: number;
     };
 
+type PendingGesture = {
+  pointerId: number;
+  pointerType: string;
+  startX: number;
+  startY: number;
+  draft: DragState;
+  armTimer: number;
+};
+
+const SCROLL_CANCEL_PX = 8;
+const LONG_PRESS_MS = 280;
+
+function isTouchPointer(pointerType: string) {
+  return pointerType === 'touch';
+}
+
 export function DayCalendar({
   timezone = DEFAULT_TIMEZONE,
   localTimezone = timezone,
@@ -72,6 +88,7 @@ export function DayCalendar({
 }: Props) {
   const gridRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<DragState | null>(null);
+  const pendingRef = useRef<PendingGesture | null>(null);
   const [drag, setDragState] = useState<DragState | null>(null);
   const [, setNowTick] = useState(0);
 
@@ -90,6 +107,42 @@ export function DayCalendar({
   function setDrag(next: DragState | null) {
     dragRef.current = next;
     setDragState(next);
+  }
+
+  function clearPending() {
+    const pending = pendingRef.current;
+    if (pending) window.clearTimeout(pending.armTimer);
+    pendingRef.current = null;
+  }
+
+  function armDrag(draft: DragState) {
+    clearPending();
+    setDrag(draft);
+  }
+
+  /** Touch needs a long-press so scrolling does not edit; mouse/pen stays immediate. */
+  function beginGesture(event: ReactPointerEvent, draft: DragState) {
+    if (!isTouchPointer(event.pointerType)) {
+      armDrag(draft);
+      return;
+    }
+
+    clearPending();
+    const pointerId = event.pointerId;
+    const armTimer = window.setTimeout(() => {
+      const pending = pendingRef.current;
+      if (!pending || pending.pointerId !== pointerId) return;
+      armDrag(pending.draft);
+    }, LONG_PRESS_MS);
+
+    pendingRef.current = {
+      pointerId,
+      pointerType: event.pointerType,
+      startX: event.clientX,
+      startY: event.clientY,
+      draft,
+      armTimer,
+    };
   }
 
   useEffect(() => {
@@ -156,8 +209,20 @@ export function DayCalendar({
 
   useEffect(() => {
     const onMovePointer = (event: PointerEvent) => {
+      const pending = pendingRef.current;
+      if (pending && pending.pointerId === event.pointerId) {
+        const dx = event.clientX - pending.startX;
+        const dy = event.clientY - pending.startY;
+        if (Math.hypot(dx, dy) >= SCROLL_CANCEL_PX) {
+          // Finger moved before long-press — treat as scroll / pan, not edit.
+          clearPending();
+        }
+        return;
+      }
+
       const current = dragRef.current;
       if (!current) return;
+      if (event.cancelable) event.preventDefault();
       const minutes = clamp(minutesFromClientY(event.clientY), rangeStart, rangeEnd);
       if (current.mode === 'create') {
         setDrag({ ...current, current: minutes });
@@ -176,7 +241,13 @@ export function DayCalendar({
       }
     };
 
-    const onUp = () => {
+    const onUp = (event: PointerEvent) => {
+      const pending = pendingRef.current;
+      if (pending && pending.pointerId === event.pointerId) {
+        clearPending();
+        return;
+      }
+
       const current = dragRef.current;
       if (!current) return;
       dragRef.current = null;
@@ -198,13 +269,14 @@ export function DayCalendar({
       }
     };
 
-    window.addEventListener('pointermove', onMovePointer);
+    window.addEventListener('pointermove', onMovePointer, { passive: false });
     window.addEventListener('pointerup', onUp);
     window.addEventListener('pointercancel', onUp);
     return () => {
       window.removeEventListener('pointermove', onMovePointer);
       window.removeEventListener('pointerup', onUp);
       window.removeEventListener('pointercancel', onUp);
+      clearPending();
     };
   }, [minutesFromClientY, onCreate, onMove, rangeEnd, rangeStart, readOnly, toTraining]);
 
@@ -217,7 +289,11 @@ export function DayCalendar({
       rangeStart,
       rangeEnd - DEFAULT_DURATION,
     );
-    setDrag({ mode: 'create', origin, current: origin + DEFAULT_DURATION });
+    beginGesture(event, {
+      mode: 'create',
+      origin,
+      current: origin + DEFAULT_DURATION,
+    });
     onSelect(null);
   }
 
@@ -297,7 +373,7 @@ export function DayCalendar({
                 onSelect(current.id);
                 if (readOnly) return;
                 const minutes = minutesFromClientY(event.clientY);
-                setDrag({
+                beginGesture(event, {
                   mode: 'move',
                   id: current.id,
                   offset: current.startMinutes,
@@ -308,13 +384,13 @@ export function DayCalendar({
               onResizePointerDown={(event, current) => {
                 event.stopPropagation();
                 if (readOnly) return;
-                setDrag({
+                onSelect(current.id);
+                beginGesture(event, {
                   mode: 'resize',
                   id: current.id,
                   startMinutes: current.startMinutes,
                   currentEnd: current.endMinutes,
                 });
-                onSelect(current.id);
               }}
             />
           ))}
