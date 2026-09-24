@@ -61,7 +61,9 @@ type PendingGesture = {
   pointerType: string;
   startX: number;
   startY: number;
-  draft: DragState;
+  draft: DragState | null;
+  /** Select this activity on tap / long-press; `null` clears selection. */
+  selectId?: string | null;
   armTimer: number;
 };
 
@@ -120,20 +122,31 @@ export function DayCalendar({
     setDrag(draft);
   }
 
-  /** Touch needs a long-press so scrolling does not edit; mouse/pen stays immediate. */
-  function beginGesture(event: ReactPointerEvent, draft: DragState) {
+  /**
+   * Touch: defer select + drag until tap-up or long-press so scrolling does not open the sheet.
+   * Mouse/pen: select and drag immediately.
+   */
+  function beginGesture(
+    event: ReactPointerEvent,
+    draft: DragState | null,
+    selectId?: string | null,
+  ) {
     if (!isTouchPointer(event.pointerType)) {
-      armDrag(draft);
+      if (selectId !== undefined) onSelect(selectId);
+      if (draft) armDrag(draft);
       return;
     }
 
     clearPending();
     const pointerId = event.pointerId;
-    const armTimer = window.setTimeout(() => {
-      const pending = pendingRef.current;
-      if (!pending || pending.pointerId !== pointerId) return;
-      armDrag(pending.draft);
-    }, LONG_PRESS_MS);
+    const armTimer = draft
+      ? window.setTimeout(() => {
+          const pending = pendingRef.current;
+          if (!pending || pending.pointerId !== pointerId || !pending.draft) return;
+          if (pending.selectId !== undefined) onSelect(pending.selectId);
+          armDrag(pending.draft);
+        }, LONG_PRESS_MS)
+      : 0;
 
     pendingRef.current = {
       pointerId,
@@ -141,6 +154,7 @@ export function DayCalendar({
       startX: event.clientX,
       startY: event.clientY,
       draft,
+      selectId,
       armTimer,
     };
   }
@@ -244,7 +258,10 @@ export function DayCalendar({
     const onUp = (event: PointerEvent) => {
       const pending = pendingRef.current;
       if (pending && pending.pointerId === event.pointerId) {
+        // Tap = pointerup without scroll. pointercancel usually means the browser took over (scroll).
+        const selectId = pending.selectId;
         clearPending();
+        if (event.type === 'pointerup' && selectId !== undefined) onSelect(selectId);
         return;
       }
 
@@ -252,6 +269,7 @@ export function DayCalendar({
       if (!current) return;
       dragRef.current = null;
       setDrag(null);
+      if (event.type === 'pointercancel') return;
       if (readOnly) return;
       if (current.mode === 'create') {
         const start = Math.min(current.origin, current.current);
@@ -278,10 +296,16 @@ export function DayCalendar({
       window.removeEventListener('pointercancel', onUp);
       clearPending();
     };
-  }, [minutesFromClientY, onCreate, onMove, rangeEnd, rangeStart, readOnly, toTraining]);
+  }, [minutesFromClientY, onCreate, onMove, onSelect, rangeEnd, rangeStart, readOnly, toTraining]);
 
   function onGridPointerDown(event: ReactPointerEvent<HTMLDivElement>) {
-    if (readOnly) return;
+    if (readOnly) {
+      // Tap empty space to dismiss selection; ignore scroll starts.
+      const target = event.target as HTMLElement;
+      if (!target.dataset.grid) return;
+      beginGesture(event, null, null);
+      return;
+    }
     const target = event.target as HTMLElement;
     if (!target.dataset.grid) return;
     const origin = clamp(
@@ -289,12 +313,15 @@ export function DayCalendar({
       rangeStart,
       rangeEnd - DEFAULT_DURATION,
     );
-    beginGesture(event, {
-      mode: 'create',
-      origin,
-      current: origin + DEFAULT_DURATION,
-    });
-    onSelect(null);
+    beginGesture(
+      event,
+      {
+        mode: 'create',
+        origin,
+        current: origin + DEFAULT_DURATION,
+      },
+      null,
+    );
   }
 
   const ghost = (() => {
@@ -370,27 +397,36 @@ export function DayCalendar({
               readOnly={readOnly}
               onMovePointerDown={(event, current) => {
                 event.stopPropagation();
-                onSelect(current.id);
-                if (readOnly) return;
+                if (readOnly) {
+                  beginGesture(event, null, current.id);
+                  return;
+                }
                 const minutes = minutesFromClientY(event.clientY);
-                beginGesture(event, {
-                  mode: 'move',
-                  id: current.id,
-                  offset: current.startMinutes,
-                  duration: current.endMinutes - current.startMinutes,
-                  grabOffset: minutes - current.startMinutes,
-                });
+                beginGesture(
+                  event,
+                  {
+                    mode: 'move',
+                    id: current.id,
+                    offset: current.startMinutes,
+                    duration: current.endMinutes - current.startMinutes,
+                    grabOffset: minutes - current.startMinutes,
+                  },
+                  current.id,
+                );
               }}
               onResizePointerDown={(event, current) => {
                 event.stopPropagation();
                 if (readOnly) return;
-                onSelect(current.id);
-                beginGesture(event, {
-                  mode: 'resize',
-                  id: current.id,
-                  startMinutes: current.startMinutes,
-                  currentEnd: current.endMinutes,
-                });
+                beginGesture(
+                  event,
+                  {
+                    mode: 'resize',
+                    id: current.id,
+                    startMinutes: current.startMinutes,
+                    currentEnd: current.endMinutes,
+                  },
+                  current.id,
+                );
               }}
             />
           ))}
