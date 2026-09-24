@@ -1,29 +1,36 @@
-import DbApp from './pages/DbApp';
-import DbViewer from './pages/DbViewer';
+import { Navigate, Route, Routes } from 'react-router-dom';
+import { AuthProvider } from './auth';
+import Dashboard from './pages/Dashboard';
 import DriveEditor from './pages/DriveEditor';
 import DriveHome from './pages/DriveHome';
 import DriveNew from './pages/DriveNew';
 import DriveViewer from './pages/DriveViewer';
-
-function currentPath(): string {
-  return window.location.pathname.replace(/\/$/, '') || '/';
-}
+import Login from './pages/Login';
+import PublicView from './pages/PublicView';
+import { RequireAuth } from './pages/RequireAuth';
+import SchedulePage from './pages/SchedulePage';
 
 export default function App() {
-  const path = currentPath();
+  return (
+    <AuthProvider>
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/v/:token" element={<PublicView />} />
+        <Route path="/view" element={<Navigate to="/login" replace />} />
 
-  // Primary: Postgres-backed editor and read-only view
-  if (path === '/' || path === '') return <DbApp />;
-  if (path === '/view') return <DbViewer />;
+        <Route path="/drive" element={<DriveHome />} />
+        <Route path="/drive/new" element={<DriveNew />} />
+        <Route path="/new" element={<DriveNew />} />
+        <Route path="/drive/edit" element={<DriveEditor />} />
+        <Route path="/edit" element={<DriveEditor />} />
+        <Route path="/drive/view" element={<DriveViewer />} />
 
-  // Drive prototype kept under /drive for later
-  if (path === '/drive') return <DriveHome />;
-  if (path === '/drive/new' || path === '/new') return <DriveNew />;
-  if (path === '/drive/edit' || path === '/edit') return <DriveEditor />;
-  if (path === '/drive/view') return <DriveViewer />;
-
-  // Legacy alias
-  if (path === '/db') return <DbApp />;
-
-  return <DbApp />;
+        <Route element={<RequireAuth />}>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/db" element={<Navigate to="/" replace />} />
+          <Route path="/schedules/:id" element={<SchedulePage />} />
+        </Route>
+      </Routes>
+    </AuthProvider>
+  );
 }

@@ -1117,3 +1117,205 @@ textarea {
     -webkit-overflow-scrolling: touch;
   }
 }
+
+.auth-page,
+.dash {
+  min-height: 100%;
+  background:
+    radial-gradient(1200px 400px at 10% -10%, rgba(224, 154, 60, 0.18), transparent 50%),
+    var(--paper);
+}
+
+.auth-page {
+  display: grid;
+  place-items: center;
+  padding: 32px 16px;
+}
+
+.auth-card {
+  width: min(420px, 100%);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  padding: 28px 24px;
+  box-shadow: var(--shadow);
+}
+
+.auth-card h1 {
+  margin: 0 0 8px;
+  font-family: Fraunces, Georgia, serif;
+}
+
+.auth-lede,
+.auth-hint,
+.dash-empty {
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.auth-form,
+.dash-create form,
+.import-dialog form {
+  display: grid;
+  gap: 12px;
+}
+
+.auth-form label,
+.dash-create label,
+.import-dialog label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.auth-form input,
+.dash-create input,
+.import-dialog input,
+.import-dialog select {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.auth-google {
+  margin-top: 16px;
+  width: 100%;
+  text-decoration: none;
+}
+
+.dash {
+  padding: 28px 20px 48px;
+}
+
+.dash-top,
+.dash-user,
+.dash-create form,
+.dash-list li {
+  display: flex;
+  gap: 12px;
+}
+
+.dash-top {
+  justify-content: space-between;
+  align-items: flex-end;
+  max-width: 880px;
+  margin: 0 auto 24px;
+}
+
+.dash-top h1 {
+  margin: 0;
+  font-family: Fraunces, Georgia, serif;
+}
+
+.dash-user {
+  align-items: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.dash-create,
+.dash-list,
+.dash-empty {
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.dash-create {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 18px;
+  margin-bottom: 22px;
+}
+
+.dash-create form {
+  flex-wrap: wrap;
+  align-items: end;
+}
+
+.dash-list {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.dash-list li {
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 14px 16px;
+}
+
+.dash-list a {
+  color: inherit;
+  text-decoration: none;
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.dash-list strong {
+  font-family: Fraunces, Georgia, serif;
+  font-size: 22px;
+}
+
+.dash-list span,
+.dash-list em {
+  color: var(--muted);
+  font-style: normal;
+  font-size: 14px;
+}
+
+.modal-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+}
+
+.import-dialog {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(440px, calc(100% - 32px));
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 20px;
+  display: grid;
+  gap: 14px;
+  box-shadow: var(--shadow);
+}
+
+.import-tabs {
+  display: flex;
+  gap: 8px;
+}
+
+.import-tabs button {
+  border: 1px solid var(--line);
+  background: #f7efe6;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.import-tabs button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fffaf4;
+}
+
+@media (max-width: 720px) {
+  .dash-top,
+  .dash-create form,
+  .dash-list li {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

@@ -7,6 +7,54 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id                 String           @id @default(uuid())
+  email              String           @unique
+  name               String?
+  googleId           String?          @unique
+  googleRefreshToken String?
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  sessions           Session[]
+  modules            TrainingModule[]
+  shareLinks         ShareLink[]
+}
+
+model MagicLink {
+  id         String    @id @default(uuid())
+  email      String
+  codeHash   String
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([email, expiresAt])
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
+model ShareLink {
+  id          String         @id @default(uuid())
+  token       String         @unique
+  moduleId    String
+  module      TrainingModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  createdById String
+  createdBy   User           @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  revokedAt   DateTime?
+  createdAt   DateTime       @default(now())
+
+  @@index([moduleId])
+}
+
 model Training {
   id        String           @id @default(uuid())
   name      String
@@ -16,35 +64,39 @@ model Training {
 }
 
 model TrainingModule {
-  id            String   @id @default(uuid())
+  id            String      @id @default(uuid())
   title         String
   weekendNumber Int
-  startDate     DateTime @db.Date
-  endDate       DateTime @db.Date
-  timezone      String   @default("America/Los_Angeles")
+  startDate     DateTime    @db.Date
+  endDate       DateTime    @db.Date
+  timezone      String      @default("America/Los_Angeles")
   zoomTopic     String?
   zoomMeetingId String?
   zoomPasscode  String?
   trainingId    String
-  training      Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+  training      Training    @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+  ownerId       String
+  owner         User        @relation(fields: [ownerId], references: [id], onDelete: Restrict)
   days          Day[]
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  shareLinks    ShareLink[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
+  @@index([ownerId])
   @@map("training_modules")
 }
 
 model Day {
-  id           String     @id @default(uuid())
-  date         DateTime   @db.Date
+  id           String         @id @default(uuid())
+  date         DateTime       @db.Date
   weekday      String
   startMinutes Int
   endMinutes   Int
   moduleId     String
   module       TrainingModule @relation(fields: [moduleId], references: [id], onDelete: Cascade)
   activities   Activity[]
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
 
   @@index([moduleId])
 }

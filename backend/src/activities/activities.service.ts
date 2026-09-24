@@ -1,13 +1,18 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { OwnershipService } from '../schedules/ownership.service';
 import { CreateActivityDto } from './dto/create-activity.dto';
 import { UpdateActivityDto } from './dto/update-activity.dto';
 
 @Injectable()
 export class ActivitiesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly ownership: OwnershipService,
+  ) {}
 
-  async create(dayId: string, dto: CreateActivityDto) {
+  async create(dayId: string, dto: CreateActivityDto, userId: string) {
+    await this.ownership.assertDayOwner(dayId, userId);
     const day = await this.prisma.day.findUnique({ where: { id: dayId } });
     if (!day) {
       throw new NotFoundException(`Day ${dayId} not found`);
@@ -29,7 +34,8 @@ export class ActivitiesService {
     });
   }
 
-  async update(id: string, dto: UpdateActivityDto) {
+  async update(id: string, dto: UpdateActivityDto, userId: string) {
+    await this.ownership.assertActivityOwner(id, userId);
     const existing = await this.prisma.activity.findUnique({ where: { id } });
     if (!existing) {
       throw new NotFoundException(`Activity ${id} not found`);
@@ -48,7 +54,8 @@ export class ActivitiesService {
     });
   }
 
-  async remove(id: string) {
+  async remove(id: string, userId: string) {
+    await this.ownership.assertActivityOwner(id, userId);
     const existing = await this.prisma.activity.findUnique({ where: { id } });
     if (!existing) {
       throw new NotFoundException(`Activity ${id} not found`);

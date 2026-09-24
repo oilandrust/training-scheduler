@@ -1,0 +1,82 @@
+{
+  "trainingName": "Hakomi Professional Skills Training 2026–2027",
+  "title": "Zoom Weekend #1",
+  "weekendNumber": 1,
+  "timezone": "America/Los_Angeles",
+  "startDate": "2026-09-18",
+  "endDate": "2026-09-20",
+  "zoomTopic": "Hakomi Professional Skills Training Level 1",
+  "zoomMeetingId": "912 2304 5408",
+  "zoomPasscode": "786460",
+  "days": [
+    {
+      "date": "2026-09-18",
+      "weekday": "Friday",
+      "startMinutes": 690,
+      "endMinutes": 1080,
+      "activities": [
+        { "title": "Staff Meeting", "startMinutes": 690, "endMinutes": 750, "kind": "STAFF", "room": "Staff / Green Room" },
+        { "title": "Staff log onto the training Zoom", "startMinutes": 765, "endMinutes": 780, "kind": "LOGISTICS", "room": "Main Room" },
+        { "title": "Welcome and overview of the weekend", "startMinutes": 780, "endMinutes": 795, "kind": "LOGISTICS", "room": "Main Room" },
+        { "title": "Heart Meditation", "startMinutes": 795, "endMinutes": 825, "kind": "MEDITATION", "room": "Main Room" },
+        { "title": "Homegroups", "startMinutes": 825, "endMinutes": 855, "kind": "BREAKOUT", "room": "Breakout" },
+        { "title": "Large group — therapeutic superpower", "startMinutes": 855, "endMinutes": 860, "kind": "SHARING", "room": "Main Room" },
+        { "title": "Logistics", "startMinutes": 860, "endMinutes": 870, "kind": "LOGISTICS", "room": "Main Room" },
+        { "title": "Mindfulness", "startMinutes": 870, "endMinutes": 880, "kind": "MEDITATION", "room": "Main Room" },
+        { "title": "Break", "startMinutes": 880, "endMinutes": 895, "kind": "BREAK", "room": "N/A" },
+        { "title": "Organicity", "startMinutes": 895, "endMinutes": 910, "kind": "TALK", "room": "Main Room" },
+        { "title": "Body–mind holism", "startMinutes": 910, "endMinutes": 930, "kind": "EXERCISE", "room": "Main Room" },
+        { "title": "Non-violence discussion", "startMinutes": 930, "endMinutes": 945, "kind": "TALK", "room": "Main Room" },
+        { "title": "Unity", "startMinutes": 945, "endMinutes": 960, "kind": "EXERCISE", "room": "Main Room" },
+        { "title": "Break", "startMinutes": 960, "endMinutes": 975, "kind": "BREAK", "room": "N/A" },
+        { "title": "Talk: Being a therapist, client, and observer", "startMinutes": 975, "endMinutes": 985, "kind": "TALK", "room": "Main Room" },
+        { "title": "Talk and exercise: Barriers of the Heart", "startMinutes": 985, "endMinutes": 1020, "kind": "EXERCISE", "room": "Main Room" },
+        { "title": "Sharing on Perfect Therapist", "startMinutes": 1020, "endMinutes": 1035, "kind": "SHARING", "room": "Main Room" },
+        { "title": "Poem: Kindness", "startMinutes": 1045, "endMinutes": 1050, "kind": "CLOSING", "room": "Main Room" },
+        { "title": "Staff check-in", "startMinutes": 1050, "endMinutes": 1080, "kind": "STAFF", "room": "Staff / Green Room" }
+      ]
+    },
+    {
+      "date": "2026-09-19",
+      "weekday": "Saturday",
+      "startMinutes": 540,
+      "endMinutes": 870,
+      "activities": [
+        { "title": "Meditation on finding an ally or Heart Lotus", "startMinutes": 540, "endMinutes": 570, "kind": "MEDITATION", "room": "Main Room" },
+        { "title": "Talk about upsets", "startMinutes": 570, "endMinutes": 585, "kind": "TALK", "room": "Main Room" },
+        { "title": "Exercise: How do you organize around upsets", "startMinutes": 585, "endMinutes": 600, "kind": "EXERCISE", "room": "Main Room" },
+        { "title": "Share with partner", "startMinutes": 600, "endMinutes": 630, "kind": "BREAKOUT", "room": "Breakout" },
+        { "title": "Break", "startMinutes": 630, "endMinutes": 645, "kind": "BREAK", "room": "N/A" },
+        { "title": "Talk — Review of Tracking", "startMinutes": 645, "endMinutes": 660, "kind": "TALK", "room": "Main Room" },
+        { "title": "Exercise: name, origin, or a children’s song", "startMinutes": 660, "endMinutes": 690, "kind": "EXERCISE", "room": "Main Room" },
+        { "title": "Demo: tracking", "startMinutes": 690, "endMinutes": 735, "kind": "DEMO", "room": "Main Room" },
+        { "title": "Debrief", "startMinutes": 735, "endMinutes": 750, "kind": "SHARING", "room": "Main Room" },
+        { "title": "Game: I’ve Got the Orange", "startMinutes": 750, "endMinutes": 765, "kind": "GAME", "room": "Main Room" },
+        { "title": "Practice sessions — tracking", "startMinutes": 765, "endMinutes": 810, "kind": "PRACTICE", "room": "Breakout" },
+        { "title": "Debrief and Q&A", "startMinutes": 810, "endMinutes": 825, "kind": "SHARING", "room": "Main Room" },
+        { "title": "Talk: Organization of Experience", "startMinutes": 825, "endMinutes": 840, "kind": "TALK", "room": "Main Room" },
+        { "title": "Staff meeting if needed", "startMinutes": 840, "endMinutes": 870, "kind": "STAFF", "room": "Staff / Green Room" }
+      ]
+    },
+    {
+      "date": "2026-09-20",
+      "weekday": "Sunday",
+      "startMinutes": 540,
+      "endMinutes": 810,
+      "activities": [
+        { "title": "Meditation: Organization of Experience", "startMinutes": 540, "endMinutes": 555, "kind": "MEDITATION", "room": "Main Room" },
+        { "title": "Sharing in dyads", "startMinutes": 555, "endMinutes": 565, "kind": "BREAKOUT", "room": "Breakout" },
+        { "title": "Form practice groups", "startMinutes": 565, "endMinutes": 570, "kind": "LOGISTICS", "room": "Main Room" },
+        { "title": "Review of contact", "startMinutes": 570, "endMinutes": 585, "kind": "TALK", "room": "Main Room" },
+        { "title": "Demo of contact", "startMinutes": 585, "endMinutes": 630, "kind": "DEMO", "room": "Main Room" },
+        { "title": "Break", "startMinutes": 630, "endMinutes": 645, "kind": "BREAK", "room": "N/A" },
+        { "title": "Practice", "startMinutes": 645, "endMinutes": 720, "kind": "PRACTICE", "room": "Breakout" },
+        { "title": "Debriefing", "startMinutes": 720, "endMinutes": 735, "kind": "SHARING", "room": "Main Room" },
+        { "title": "Q&A", "startMinutes": 735, "endMinutes": 750, "kind": "TALK", "room": "Main Room" },
+        { "title": "Homegroups", "startMinutes": 750, "endMinutes": 770, "kind": "BREAKOUT", "room": "Breakout" },
+        { "title": "Closing remarks / preview next month", "startMinutes": 770, "endMinutes": 780, "kind": "CLOSING", "room": "Main Room" },
+        { "title": "Staff debrief", "startMinutes": 780, "endMinutes": 810, "kind": "STAFF", "room": "Staff / Green Room" }
+      ]
+    }
+  ]
+}

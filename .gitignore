@@ -9,3 +9,6 @@ frontend/dist
 *.log
 .vite
 coverage
+backend/tmp
+tmp
+

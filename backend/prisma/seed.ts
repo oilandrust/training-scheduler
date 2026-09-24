@@ -16,10 +16,21 @@ type SeedActivity = {
 };
 
 async function main() {
+  await prisma.shareLink.deleteMany();
+  await prisma.session.deleteMany();
+  await prisma.magicLink.deleteMany();
   await prisma.activity.deleteMany();
   await prisma.day.deleteMany();
   await prisma.trainingModule.deleteMany();
   await prisma.training.deleteMany();
+  await prisma.user.deleteMany();
+
+  const owner = await prisma.user.create({
+    data: {
+      email: 'demo@training-scheduler.local',
+      name: 'Demo',
+    },
+  });
 
   const training = await prisma.training.create({
     data: {
@@ -30,6 +41,7 @@ async function main() {
   const weekend = await prisma.trainingModule.create({
     data: {
       trainingId: training.id,
+      ownerId: owner.id,
       title: 'Zoom Weekend #1',
       weekendNumber: 1,
       startDate: new Date(Date.UTC(2026, 8, 18)),

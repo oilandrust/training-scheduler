@@ -1,0 +1,28 @@
+# Curated models for schedule extraction benchmarking.
+# Skip TTS / whisper / prompt-guard / batch / :free variants.
+#
+# Usage:
+#   npm run test:extract --prefix backend -- --preset groq
+#   npm run test:extract --prefix backend -- --preset openrouter
+#   npm run test:extract --prefix backend -- --preset all
+
+[groq]
+# Chat / reasoning models available on this Groq account
+openai/gpt-oss-120b
+openai/gpt-oss-20b
+qwen/qwen3.8-27b
+qwen/qwen3.6-27b
+
+[openrouter]
+# Fast / cheap first (good for iteration)
+google/gemini-2.5-flash
+google/gemini-2.5-flash-lite
+deepseek/deepseek-chat-v3.1
+openai/gpt-4.1-mini
+meta-llama/llama-3.3-70b-instruct
+# Stronger structured extraction
+anthropic/claude-haiku-4.5
+anthropic/claude-sonnet-4.5
+google/gemini-2.5-pro
+openai/gpt-4.1
+deepseek/deepseek-v3.2

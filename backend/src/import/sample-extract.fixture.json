@@ -1,0 +1,23 @@
+{
+  "trainingName": "Hakomi Professional Skills Training 2026–2027",
+  "title": "Zoom Weekend #1",
+  "weekendNumber": 1,
+  "timezone": "America/Los_Angeles",
+  "startDate": "2026-09-18",
+  "endDate": "2026-09-20",
+  "days": [
+    {
+      "date": "2026-09-18",
+      "weekday": "Friday",
+      "activities": [
+        {
+          "title": "Staff Meeting",
+          "startMinutes": 690,
+          "endMinutes": 750,
+          "kind": "STAFF",
+          "room": "Staff / Green Room"
+        }
+      ]
+    }
+  ]
+}
