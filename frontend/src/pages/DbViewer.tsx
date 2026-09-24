@@ -1,13 +1,14 @@
 import { DbSchedule } from './DbSchedule';
 
-/** Prisma-backed day editor at `/`. */
-export default function DbApp() {
+/** Prisma-backed read-only schedule at `/view`. */
+export default function DbViewer() {
   return (
     <DbSchedule
+      readOnly
       headerExtra={
         <div className="drive-actions">
-          <a className="topbar-link" href="/view">
-            Read-only view
+          <a className="btn primary" href="/">
+            Open Editor
           </a>
         </div>
       }

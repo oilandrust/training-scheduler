@@ -37,9 +37,9 @@ export function appOrigin(): string {
 }
 
 export function viewUrl(fileId: string): string {
-  return `${appOrigin()}/view?fileId=${encodeURIComponent(fileId)}`;
+  return `${appOrigin()}/drive/view?fileId=${encodeURIComponent(fileId)}`;
 }
 
 export function editUrl(fileId: string): string {
-  return `${appOrigin()}/edit?fileId=${encodeURIComponent(fileId)}`;
+  return `${appOrigin()}/drive/edit?fileId=${encodeURIComponent(fileId)}`;
 }

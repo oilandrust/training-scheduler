@@ -23,7 +23,7 @@ export default function DriveNew() {
 
     const run = async () => {
       const created = await createFile('Untitled schedule', createBlankWeekendDocument());
-      window.location.replace(`/edit?fileId=${encodeURIComponent(created.id)}`);
+      window.location.replace(`/drive/edit?fileId=${encodeURIComponent(created.id)}`);
     };
 
     if (!isSignedIn()) {

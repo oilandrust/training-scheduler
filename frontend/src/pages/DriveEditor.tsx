@@ -55,7 +55,7 @@ export default function DriveEditor() {
     try {
       const [nextMeta, raw] = await Promise.all([getFileMeta(fileId), getFileContent(fileId)]);
       if (nextMeta.capabilities?.canEdit === false) {
-        window.location.replace(`/view?fileId=${encodeURIComponent(fileId)}`);
+        window.location.replace(`/drive/view?fileId=${encodeURIComponent(fileId)}`);
         return;
       }
       setMeta(nextMeta);
@@ -184,10 +184,10 @@ export default function DriveEditor() {
               Locate in Drive
             </a>
           )}
-          <a className="topbar-link" href={`/view?fileId=${encodeURIComponent(fileId)}`}>
+          <a className="topbar-link" href={`/drive/view?fileId=${encodeURIComponent(fileId)}`}>
             View
           </a>
-          <a className="topbar-link" href="/">
+          <a className="topbar-link" href="/drive">
             All schedules
           </a>
         </div>

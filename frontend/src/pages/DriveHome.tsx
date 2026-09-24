@@ -61,7 +61,7 @@ export default function DriveHome() {
   };
 
   const openFile = (fileId: string) => {
-    window.location.assign(`/edit?fileId=${encodeURIComponent(fileId)}`);
+    window.location.assign(`/drive/edit?fileId=${encodeURIComponent(fileId)}`);
   };
 
   const createBlank = () => {
@@ -174,7 +174,7 @@ export default function DriveHome() {
       </section>
 
       <footer className="drive-footer">
-        <a href="/db">Open database demo</a>
+        <a href="/">Database editor</a>
         <span>·</span>
         <a
           href="https://github.com/oilandrust/training-scheduler/blob/main/GOOGLE_DRIVE_SETUP.md"

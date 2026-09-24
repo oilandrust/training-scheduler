@@ -130,7 +130,7 @@ export default function DriveViewer() {
           {meta?.capabilities?.canShare && (
             <ShareControl fileId={fileId} fileName={fileName} />
           )}
-          <a className="topbar-link" href="/">
+          <a className="topbar-link" href="/drive">
             All schedules
           </a>
         </div>
