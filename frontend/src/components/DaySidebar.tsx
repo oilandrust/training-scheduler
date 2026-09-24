@@ -10,7 +10,6 @@ type Props = {
 export function DaySidebar({ days, selectedDayId, onSelect }: Props) {
   return (
     <aside className="sidebar">
-      <p className="sidebar-kicker">Weekend days</p>
       <nav className="day-list">
         {days.map((day) => {
           const selected = day.id === selectedDayId;
@@ -32,9 +31,6 @@ export function DaySidebar({ days, selectedDayId, onSelect }: Props) {
           );
         })}
       </nav>
-      <p className="sidebar-hint">
-        Click an empty slot to add an activity. Drag to move, pull the edge to resize.
-      </p>
     </aside>
   );
 }

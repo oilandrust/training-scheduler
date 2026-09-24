@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { ActivitySummary } from './ActivitySummary';
 import { DayCalendar, type ClockMode } from './DayCalendar';
 import { DaySidebar } from './DaySidebar';
@@ -54,6 +55,21 @@ export function ScheduleEditor({
   const selectedDay = useMemo(
     () => module.days.find((day) => day.id === selectedDayId) ?? null,
     [module, selectedDayId],
+  );
+
+  const selectedDayIndex = useMemo(
+    () => module.days.findIndex((day) => day.id === selectedDayId),
+    [module.days, selectedDayId],
+  );
+
+  const selectDayAt = useCallback(
+    (index: number) => {
+      const day = module.days[index];
+      if (!day) return;
+      setSelectedDayId(day.id);
+      setSelectedActivityId(null);
+    },
+    [module.days],
   );
 
   const activities = selectedDay?.activities ?? [];
@@ -131,9 +147,29 @@ export function ScheduleEditor({
 
       <main className="main">
         <div className="main-header">
-          <div>
-            <h2>{selectedDay.weekday}</h2>
-            <p>{formatDateLabel(selectedDay.date)}</p>
+          <div className="main-header-day">
+            <button
+              type="button"
+              className="day-nav-btn"
+              aria-label="Previous day"
+              disabled={selectedDayIndex <= 0}
+              onClick={() => selectDayAt(selectedDayIndex - 1)}
+            >
+              ‹
+            </button>
+            <div>
+              <h2>{selectedDay.weekday}</h2>
+              <p>{formatDateLabel(selectedDay.date)}</p>
+            </div>
+            <button
+              type="button"
+              className="day-nav-btn"
+              aria-label="Next day"
+              disabled={selectedDayIndex < 0 || selectedDayIndex >= module.days.length - 1}
+              onClick={() => selectDayAt(selectedDayIndex + 1)}
+            >
+              ›
+            </button>
           </div>
           <div className="main-header-actions">
             {showTzToggle && (
@@ -183,14 +219,61 @@ export function ScheduleEditor({
         />
       </main>
 
-      {readOnly ? (
-        <ActivitySummary activity={selectedActivity} />
-      ) : (
-        <DetailsPanel
-          activity={selectedActivity}
-          onChange={onChange ?? (() => undefined)}
-          onDelete={handleDelete}
-        />
+      <aside className="details-desktop">
+        {readOnly ? (
+          <ActivitySummary activity={selectedActivity} />
+        ) : (
+          <DetailsPanel
+            activity={selectedActivity}
+            onChange={onChange ?? (() => undefined)}
+            onDelete={handleDelete}
+          />
+        )}
+      </aside>
+
+      {createPortal(
+        <div
+          className={`details-mobile-layer ${selectedActivity ? 'is-open' : ''}`}
+          aria-hidden={!selectedActivity}
+        >
+          {selectedActivity && (
+            <>
+              <button
+                type="button"
+                className="details-backdrop"
+                aria-label="Close details"
+                onClick={() => setSelectedActivityId(null)}
+              />
+              <div
+                className="details-sheet"
+                role="dialog"
+                aria-modal="true"
+                aria-label="Activity details"
+              >
+                <div className="details-sheet-chrome">
+                  <span className="details-sheet-handle" aria-hidden />
+                  <button
+                    type="button"
+                    className="details-sheet-close"
+                    onClick={() => setSelectedActivityId(null)}
+                  >
+                    Close
+                  </button>
+                </div>
+                {readOnly ? (
+                  <ActivitySummary activity={selectedActivity} />
+                ) : (
+                  <DetailsPanel
+                    activity={selectedActivity}
+                    onChange={onChange ?? (() => undefined)}
+                    onDelete={handleDelete}
+                  />
+                )}
+              </div>
+            </>
+          )}
+        </div>,
+        document.body,
       )}
     </div>
   );
