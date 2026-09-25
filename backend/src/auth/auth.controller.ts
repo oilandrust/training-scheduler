@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Post, Query, Req, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Post, Query, Req, Res } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { MagicLinkDto } from './dto/magic-link.dto';
 import { VerifyMagicLinkDto } from './dto/verify.dto';
 import { Public } from './public.decorator';
 import { OAUTH_STATE_COOKIE, SESSION_COOKIE, type AuthedUser } from './auth.types';
+import { CurrentUser } from './current-user.decorator';
 
 @Controller('auth')
 export class AuthController {
@@ -80,5 +81,13 @@ export class AuthController {
   @Post('logout')
   logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     return this.auth.logout(req.cookies?.[SESSION_COOKIE], res);
+  }
+
+  @Delete('account')
+  deleteAccount(
+    @CurrentUser() user: AuthedUser,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.auth.deleteAccount(user.id, res);
   }
 }

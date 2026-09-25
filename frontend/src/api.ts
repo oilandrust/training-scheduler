@@ -78,12 +78,16 @@ export function logout() {
   return request<{ ok: boolean }>('/api/auth/logout', { method: 'POST' });
 }
 
+export function deleteAccount() {
+  return request<{ ok: boolean }>('/api/auth/account', { method: 'DELETE' });
+}
+
 export function listSchedules() {
   return request<ScheduleSummary[]>('/api/schedules');
 }
 
 export function getSchedule(id: string) {
-  return request<TrainingModule>(`/api/schedules/${id}`);
+  return request<TrainingModule & { shareUrl: string | null }>(`/api/schedules/${id}`);
 }
 
 export function listModules() {

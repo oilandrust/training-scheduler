@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { createActivity, deleteActivity, getSchedule, updateActivity } from '../api';
 import { AppShare } from '../components/AppShare';
 import { ScheduleEditor } from '../components/ScheduleEditor';
@@ -10,6 +11,7 @@ type Props = {
 
 export function OwnedSchedule({ moduleId }: Props) {
   const [module, setModule] = useState<TrainingModule | null>(null);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -19,7 +21,11 @@ export function OwnedSchedule({ moduleId }: Props) {
     (async () => {
       try {
         const full = await getSchedule(moduleId);
-        if (!cancelled) setModule(full);
+        if (!cancelled) {
+          const { shareUrl: activeShareUrl, ...schedule } = full;
+          setModule(schedule);
+          setShareUrl(activeShareUrl);
+        }
       } catch (err) {
         if (!cancelled) setError(err instanceof Error ? err.message : 'Failed to load');
       } finally {
@@ -164,10 +170,24 @@ export function OwnedSchedule({ moduleId }: Props) {
       onDelete={handleDelete}
       headerExtra={
         <div className="drive-actions">
-          <a className="topbar-link" href="/">
-            All weekends
-          </a>
-          <AppShare scheduleId={module.id} />
+          <AppShare
+            scheduleId={module.id}
+            initialShareUrl={shareUrl}
+            onShareUrlChange={setShareUrl}
+          />
+          <Link
+            className="topbar-icon-btn"
+            to="/"
+            aria-label="All weekends"
+            title="All weekends"
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                fill="currentColor"
+                d="M12 3.2 3.5 10.2a1 1 0 0 0-.3.7V20a1 1 0 0 0 1 1h5.2a.8.8 0 0 0 .8-.8V15.5a1.5 1.5 0 0 1 3 0v4.7a.8.8 0 0 0 .8.8H20a1 1 0 0 0 1-1v-9.1a1 1 0 0 0-.3-.7L12 3.2Z"
+              />
+            </svg>
+          </Link>
         </div>
       }
     />

@@ -100,6 +100,37 @@ export class AuthService {
     return { ok: true };
   }
 
+  async deleteAccount(userId: string, res: Response) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, email: true },
+    });
+    if (!user) throw new UnauthorizedException('Account not found');
+
+    await this.prisma.$transaction(async (tx) => {
+      const modules = await tx.trainingModule.findMany({
+        where: { ownerId: userId },
+        select: { trainingId: true },
+      });
+      const trainingIds = [...new Set(modules.map((module) => module.trainingId))];
+
+      await tx.trainingModule.deleteMany({ where: { ownerId: userId } });
+
+      for (const trainingId of trainingIds) {
+        const leftover = await tx.trainingModule.count({ where: { trainingId } });
+        if (leftover === 0) {
+          await tx.training.delete({ where: { id: trainingId } }).catch(() => undefined);
+        }
+      }
+
+      await tx.magicLink.deleteMany({ where: { email: user.email } });
+      await tx.user.delete({ where: { id: userId } });
+    });
+
+    this.clearSession(res);
+    return { ok: true };
+  }
+
   normalizeEmail(email: string) {
     return email.trim().toLowerCase();
   }

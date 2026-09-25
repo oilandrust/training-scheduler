@@ -608,6 +608,30 @@ textarea {
   text-decoration: underline;
 }
 
+.topbar-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.topbar-icon-btn:hover {
+  background: #f7efe6;
+}
+
+.topbar-icon-btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
 .drive-actions {
   display: flex;
   flex-wrap: wrap;
@@ -785,6 +809,10 @@ textarea {
   border-left: 1px solid rgba(255, 250, 244, 0.28);
   padding-inline: 10px;
   min-width: 34px;
+}
+
+.share-split .btn.share-arrow {
+  border-left-color: var(--line);
 }
 
 .share-copied {
@@ -1171,6 +1199,7 @@ textarea {
 
 .auth-form input,
 .dash-create input,
+.dash-create select,
 .import-dialog input,
 .import-dialog select {
   border: 1px solid var(--line);
@@ -1305,6 +1334,7 @@ textarea {
 }
 
 .dash-create,
+.dash-import,
 .dash-list,
 .dash-empty {
   max-width: 880px;
@@ -1316,12 +1346,24 @@ textarea {
   border: 1px solid var(--line);
   border-radius: 20px;
   padding: 18px;
-  margin-bottom: 22px;
+  margin-bottom: 12px;
 }
 
 .dash-create form {
   flex-wrap: wrap;
   align-items: end;
+}
+
+.dash-create-submit {
+  margin-left: auto;
+  display: flex;
+  align-items: end;
+}
+
+.dash-import {
+  margin-bottom: 22px;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .dash-list {
@@ -1338,14 +1380,26 @@ textarea {
   border: 1px solid var(--line);
   border-radius: 18px;
   padding: 14px 16px;
+  overflow: visible;
 }
 
-.dash-list a {
-  color: inherit;
-  text-decoration: none;
+.dash-item-meta {
   display: grid;
   gap: 2px;
   min-width: 0;
+}
+
+.dash-item-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.dash-item-actions .btn {
+  text-decoration: none;
 }
 
 .dash-list strong {
@@ -1406,5 +1460,9 @@ textarea {
   .dash-list li {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .dash-item-actions {
+    justify-content: flex-start;
   }
 }

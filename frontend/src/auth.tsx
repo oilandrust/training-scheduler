@@ -1,11 +1,17 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { getMe, logout as logoutRequest, type AuthUser } from './api';
+import {
+  deleteAccount as deleteAccountRequest,
+  getMe,
+  logout as logoutRequest,
+  type AuthUser,
+} from './api';
 
 type AuthState = {
   user: AuthUser | null;
   loading: boolean;
   refresh: () => Promise<void>;
   logout: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthState | null>(null);
@@ -33,8 +39,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
+  const deleteAccount = async () => {
+    await deleteAccountRequest();
+    setUser(null);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, loading, refresh, logout }}>
+    <AuthContext.Provider value={{ user, loading, refresh, logout, deleteAccount }}>
       {children}
     </AuthContext.Provider>
   );

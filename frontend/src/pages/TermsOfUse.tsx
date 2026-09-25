@@ -27,10 +27,6 @@ export default function TermsOfUse() {
           You are responsible for activity under your account and for keeping access to your
           email or Google account secure.
         </li>
-        <li>
-          We may suspend or terminate accounts that abuse the Service, attempt unauthorized
-          access, or violate these terms.
-        </li>
       </ul>
 
       <h2>Your content</h2>

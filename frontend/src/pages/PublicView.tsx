@@ -31,5 +31,5 @@ export default function PublicView() {
   if (loading) return <div className="boot">Opening the weekend…</div>;
   if (error || !module) return <div className="boot error">{error ?? 'Not found'}</div>;
 
-  return <ScheduleEditor module={module} readOnly headerExtra={<span className="dirty-pill">View only</span>} />;
+  return <ScheduleEditor module={module} readOnly />;
 }

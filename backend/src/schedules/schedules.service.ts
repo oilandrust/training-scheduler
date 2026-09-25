@@ -58,10 +58,21 @@ export class SchedulesService {
     await this.ownership.assertModuleOwner(id, userId);
     const module = await this.prisma.trainingModule.findUnique({
       where: { id },
-      include: moduleInclude,
+      include: {
+        ...moduleInclude,
+        shareLinks: {
+          where: { revokedAt: null },
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+        },
+      },
     });
     if (!module) throw new NotFoundException(`Schedule ${id} not found`);
-    return module;
+    const { shareLinks, ...rest } = module;
+    return {
+      ...rest,
+      shareUrl: shareLinks[0] ? this.publicUrl(shareLinks[0].token) : null,
+    };
   }
 
   async create(userId: string, dto: CreateScheduleDto) {
