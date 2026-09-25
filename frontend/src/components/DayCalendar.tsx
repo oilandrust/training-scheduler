@@ -261,7 +261,10 @@ export function DayCalendar({
         // Tap = pointerup without scroll. pointercancel usually means the browser took over (scroll).
         const selectId = pending.selectId;
         clearPending();
-        if (event.type === 'pointerup' && selectId !== undefined) onSelect(selectId);
+        if (event.type === 'pointerup' && selectId !== undefined) {
+          if (event.cancelable) event.preventDefault();
+          onSelect(selectId);
+        }
         return;
       }
 

@@ -1077,6 +1077,13 @@ textarea {
     position: fixed;
     inset: 0;
     z-index: 1000;
+    overscroll-behavior: none;
+  }
+
+  /* Swallow the opening tap so it cannot close or interact with the sheet. */
+  .details-mobile-layer.is-open:not(.is-armed) .details-backdrop,
+  .details-mobile-layer.is-open:not(.is-armed) .details-sheet {
+    pointer-events: none;
   }
 
   .details-backdrop {
@@ -1102,6 +1109,13 @@ textarea {
     box-shadow: 0 -12px 40px rgba(44, 29, 24, 0.22);
     flex-direction: column;
     padding-bottom: env(safe-area-inset-bottom, 0);
+    transition: transform 0.2s ease;
+    touch-action: pan-y;
+    overscroll-behavior: none;
+  }
+
+  .details-sheet.is-dragging {
+    transition: none;
   }
 
   .details-sheet-chrome {
@@ -1110,8 +1124,12 @@ textarea {
     align-items: center;
     justify-content: flex-end;
     gap: 12px;
-    padding: 14px 16px 0;
+    min-height: 48px;
+    padding: 18px 16px 4px;
     flex-shrink: 0;
+    touch-action: none;
+    overscroll-behavior: none;
+    cursor: grab;
   }
 
   .details-sheet-handle {
@@ -1121,8 +1139,15 @@ textarea {
     background: #e0d0c0;
     position: absolute;
     left: 50%;
-    top: 10px;
+    top: 12px;
     transform: translateX(-50%);
+    pointer-events: none;
+  }
+
+  .details-sheet-handle::before {
+    content: '';
+    position: absolute;
+    inset: -18px -48px;
   }
 
   .details-sheet-close {
@@ -1143,6 +1168,7 @@ textarea {
     padding: 8px 18px 24px;
     overflow: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
   }
 }
 

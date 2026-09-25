@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type PointerEvent as ReactPointerEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { ActivitySummary } from './ActivitySummary';
 import { DayCalendar, type ClockMode } from './DayCalendar';
@@ -41,6 +41,10 @@ export function ScheduleEditor({
 }: ScheduleEditorProps) {
   const [selectedDayId, setSelectedDayId] = useState<string | null>(module.days[0]?.id ?? null);
   const [selectedActivityId, setSelectedActivityId] = useState<string | null>(null);
+  const [sheetArmed, setSheetArmed] = useState(false);
+  const [sheetOffset, setSheetOffset] = useState(0);
+  const [sheetDragging, setSheetDragging] = useState(false);
+  const sheetDragRef = useRef<{ pointerId: number; startY: number } | null>(null);
   const localTimezone = useMemo(() => getBrowserTimeZone(), []);
   const showTzToggle = timeZonesAreDifferent(module.timezone, localTimezone);
   const [clockMode, setClockMode] = useState<ClockMode>('training');
@@ -51,6 +55,77 @@ export function ScheduleEditor({
       setSelectedActivityId(null);
     }
   }, [module.days, selectedDayId]);
+
+  useEffect(() => {
+    if (!selectedActivityId) {
+      setSheetArmed(false);
+      setSheetOffset(0);
+      setSheetDragging(false);
+      sheetDragRef.current = null;
+      return;
+    }
+    setSheetArmed(false);
+    setSheetOffset(0);
+    const timer = window.setTimeout(() => setSheetArmed(true), 400);
+    return () => window.clearTimeout(timer);
+  }, [selectedActivityId]);
+
+  useEffect(() => {
+    if (!selectedActivityId) return;
+    const html = document.documentElement;
+    const { overflow, overscrollBehaviorY } = document.body.style;
+    const htmlOverscroll = html.style.overscrollBehaviorY;
+    document.body.style.overflow = 'hidden';
+    document.body.style.overscrollBehaviorY = 'none';
+    html.style.overscrollBehaviorY = 'none';
+    return () => {
+      document.body.style.overflow = overflow;
+      document.body.style.overscrollBehaviorY = overscrollBehaviorY;
+      html.style.overscrollBehaviorY = htmlOverscroll;
+    };
+  }, [selectedActivityId]);
+
+  const closeSheet = useCallback(() => {
+    setSelectedActivityId(null);
+    setSheetOffset(0);
+    setSheetDragging(false);
+    sheetDragRef.current = null;
+  }, []);
+
+  const onSheetChromePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!sheetArmed) return;
+    if ((event.target as HTMLElement).closest('button')) return;
+    event.preventDefault();
+    event.currentTarget.setPointerCapture(event.pointerId);
+    sheetDragRef.current = { pointerId: event.pointerId, startY: event.clientY };
+    setSheetDragging(true);
+  };
+
+  const onSheetChromePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const drag = sheetDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    event.preventDefault();
+    setSheetOffset(Math.max(0, event.clientY - drag.startY));
+  };
+
+  const onSheetChromePointerEnd = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const drag = sheetDragRef.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    const dy = Math.max(0, event.clientY - drag.startY);
+    sheetDragRef.current = null;
+    setSheetDragging(false);
+    if (dy > 72) {
+      closeSheet();
+      return;
+    }
+    setSheetOffset(0);
+  };
+
+  const swallowOpeningGesture = (event: { preventDefault: () => void; stopPropagation: () => void }) => {
+    if (sheetArmed) return;
+    event.preventDefault();
+    event.stopPropagation();
+  };
 
   const selectedDay = useMemo(
     () => module.days.find((day) => day.id === selectedDayId) ?? null,
@@ -233,8 +308,11 @@ export function ScheduleEditor({
 
       {createPortal(
         <div
-          className={`details-mobile-layer ${selectedActivity ? 'is-open' : ''}`}
+          className={`details-mobile-layer ${selectedActivity ? 'is-open' : ''} ${sheetArmed ? 'is-armed' : ''}`}
           aria-hidden={!selectedActivity}
+          onPointerDownCapture={swallowOpeningGesture}
+          onPointerUpCapture={swallowOpeningGesture}
+          onClickCapture={swallowOpeningGesture}
         >
           {selectedActivity && (
             <>
@@ -242,20 +320,29 @@ export function ScheduleEditor({
                 type="button"
                 className="details-backdrop"
                 aria-label="Close details"
-                onClick={() => setSelectedActivityId(null)}
+                onClick={() => {
+                  if (sheetArmed) closeSheet();
+                }}
               />
               <div
-                className="details-sheet"
+                className={`details-sheet ${sheetDragging ? 'is-dragging' : ''}`}
                 role="dialog"
                 aria-modal="true"
                 aria-label="Activity details"
+                style={sheetOffset ? { transform: `translateY(${sheetOffset}px)` } : undefined}
               >
-                <div className="details-sheet-chrome">
+                <div
+                  className="details-sheet-chrome"
+                  onPointerDown={onSheetChromePointerDown}
+                  onPointerMove={onSheetChromePointerMove}
+                  onPointerUp={onSheetChromePointerEnd}
+                  onPointerCancel={onSheetChromePointerEnd}
+                >
                   <span className="details-sheet-handle" aria-hidden />
                   <button
                     type="button"
                     className="details-sheet-close"
-                    onClick={() => setSelectedActivityId(null)}
+                    onClick={closeSheet}
                   >
                     Close
                   </button>
