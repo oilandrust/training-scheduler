@@ -1,5 +1,5 @@
 import { FormEvent, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Link, Navigate } from 'react-router-dom';
 import { requestMagicLink, verifyMagicLink } from '../api';
 import { useAuth } from '../auth';
 
@@ -101,6 +101,11 @@ export default function Login() {
           Continue with Google
         </a>
         {error && <p className="inline-error">{error}</p>}
+        <p className="auth-legal">
+          <Link to="/privacy">Privacy</Link>
+          {' · '}
+          <Link to="/terms">Terms</Link>
+        </p>
       </div>
     </div>
   );

@@ -46,6 +46,14 @@ Cookies are `HttpOnly`, `SameSite=Lax`, path `/`. Production nginx already proxi
 
 Use the existing Web client. Add redirect URIs for both callbacks (localhost:3000 and the production host). Login scopes: `openid email profile`. Drive import adds `drive.readonly` and `access_type=offline`.
 
+OAuth consent screen links (public, no auth):
+
+| Field | URL |
+| --- | --- |
+| Application home page | `https://training-scheduler.lefolio.fr/` |
+| Privacy policy | `https://training-scheduler.lefolio.fr/privacy` |
+| Terms of service | `https://training-scheduler.lefolio.fr/terms` |
+
 ## Production deploy
 
 After `git pull` / `./deploy/deploy.sh`:

@@ -6,15 +6,19 @@ import DriveHome from './pages/DriveHome';
 import DriveNew from './pages/DriveNew';
 import DriveViewer from './pages/DriveViewer';
 import Login from './pages/Login';
+import PrivacyPolicy from './pages/PrivacyPolicy';
 import PublicView from './pages/PublicView';
 import { RequireAuth } from './pages/RequireAuth';
 import SchedulePage from './pages/SchedulePage';
+import TermsOfUse from './pages/TermsOfUse';
 
 export default function App() {
   return (
     <AuthProvider>
       <Routes>
         <Route path="/login" element={<Login />} />
+        <Route path="/privacy" element={<PrivacyPolicy />} />
+        <Route path="/terms" element={<TermsOfUse />} />
         <Route path="/v/:token" element={<PublicView />} />
         <Route path="/view" element={<Navigate to="/login" replace />} />
 
