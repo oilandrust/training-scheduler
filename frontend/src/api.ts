@@ -140,6 +140,14 @@ export function listDriveFiles() {
   return request<DriveFile[]>('/api/import/drive/files');
 }
 
+export function getDrivePickerConfig() {
+  return request<{ apiKey: string; appId: string; clientId: string }>('/api/import/drive/picker-config');
+}
+
+export function getDriveAccessToken() {
+  return request<{ accessToken: string }>('/api/import/drive/token');
+}
+
 export function importDriveFile(fileId: string) {
   return request<{ scheduleId: string }>('/api/import/drive', {
     method: 'POST',

@@ -1188,6 +1188,11 @@ textarea {
   gap: 12px;
 }
 
+.import-drive {
+  display: grid;
+  gap: 12px;
+}
+
 .auth-form label,
 .dash-create label,
 .import-dialog label {

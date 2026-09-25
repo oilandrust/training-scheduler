@@ -36,6 +36,8 @@ Sign in as that user via magic link (the OTP is printed in the API log when `RES
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | App login + Drive connect |
 | `GOOGLE_CALLBACK_URL` | `…/api/auth/google/callback` |
 | `GOOGLE_DRIVE_CALLBACK_URL` | `…/api/auth/drive/callback` |
+| `GOOGLE_API_KEY` | Browser API key for [Google Picker](https://developers.google.com/drive/picker) (enable Picker API; restrict by HTTP referrer) |
+| `GOOGLE_APP_ID` | Cloud project number (optional; defaults to the numeric prefix of `GOOGLE_CLIENT_ID`) |
 | `LLM_PROVIDER` | `openrouter` (default) or `groq` |
 | `GROQ_API_KEY` / `GROQ_MODEL` | Groq extraction |
 | `OPENROUTER_API_KEY` / `OPENROUTER_MODEL` | OpenRouter extraction (`google/gemini-2.5-flash-lite`) |

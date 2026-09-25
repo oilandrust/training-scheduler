@@ -32,7 +32,7 @@ export class ImportService {
   }
 
   async listDriveDocs(userId: string) {
-    const accessToken = await this.driveAccessToken(userId);
+    const accessToken = await this.getDriveAccessToken(userId);
     const url = new URL('https://www.googleapis.com/drive/v3/files');
     url.searchParams.set(
       'q',
@@ -55,7 +55,7 @@ export class ImportService {
 
   async importDrive(userId: string, fileId: string) {
     if (!fileId?.trim()) throw new BadRequestException('fileId is required');
-    const accessToken = await this.driveAccessToken(userId);
+    const accessToken = await this.getDriveAccessToken(userId);
     const metaRes = await fetch(
       `https://www.googleapis.com/drive/v3/files/${encodeURIComponent(fileId)}?fields=id,name,mimeType`,
       { headers: { Authorization: `Bearer ${accessToken}` } },
@@ -144,7 +144,21 @@ export class ImportService {
     });
   }
 
-  private async driveAccessToken(userId: string) {
+  pickerConfig() {
+    const clientId = this.config.get<string>('GOOGLE_CLIENT_ID')?.trim() ?? '';
+    const apiKey = this.config.get<string>('GOOGLE_API_KEY')?.trim() ?? '';
+    const appId =
+      this.config.get<string>('GOOGLE_APP_ID')?.trim() ||
+      (clientId.includes('-') ? clientId.slice(0, clientId.indexOf('-')) : '');
+    if (!clientId || !apiKey || !appId) {
+      throw new BadRequestException(
+        'Google Picker is not configured (need GOOGLE_CLIENT_ID, GOOGLE_API_KEY, and GOOGLE_APP_ID)',
+      );
+    }
+    return { clientId, apiKey, appId };
+  }
+
+  async getDriveAccessToken(userId: string) {
     const user = await this.prisma.user.findUnique({ where: { id: userId } });
     if (!user?.googleRefreshToken) {
       throw new ConflictException('Connect Google Drive first');

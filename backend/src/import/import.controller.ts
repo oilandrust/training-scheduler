@@ -39,6 +39,17 @@ export class ImportController {
     return this.imports.listDriveDocs(user.id);
   }
 
+  @Get('drive/picker-config')
+  pickerConfig() {
+    return this.imports.pickerConfig();
+  }
+
+  @Get('drive/token')
+  async driveToken(@CurrentUser() user: AuthedUser) {
+    const accessToken = await this.imports.getDriveAccessToken(user.id);
+    return { accessToken };
+  }
+
   @Post('drive')
   importDrive(@CurrentUser() user: AuthedUser, @Body() dto: DriveImportDto) {
     return this.imports.importDrive(user.id, dto.fileId);

@@ -1,6 +1,12 @@
-import { FormEvent, useEffect, useState } from 'react';
-import { importDriveFile, importPdf, listDriveFiles, type DriveFile } from '../api';
+import { FormEvent, useState } from 'react';
+import {
+  getDriveAccessToken,
+  getDrivePickerConfig,
+  importDriveFile,
+  importPdf,
+} from '../api';
 import { useAuth } from '../auth';
+import { openDrivePicker } from '../drive/picker';
 
 type Props = {
   hasDrive: boolean;
@@ -12,25 +18,9 @@ export function ImportDialog({ hasDrive, onClose, onImported }: Props) {
   const { refresh } = useAuth();
   const [tab, setTab] = useState<'pdf' | 'drive'>(hasDrive ? 'drive' : 'pdf');
   const [busy, setBusy] = useState(false);
+  const [picking, setPicking] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [files, setFiles] = useState<DriveFile[]>([]);
-  const [fileId, setFileId] = useState('');
-
-  useEffect(() => {
-    if (tab !== 'drive' || !hasDrive) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const rows = await listDriveFiles();
-        if (!cancelled) setFiles(rows);
-      } catch (err) {
-        if (!cancelled) setError(err instanceof Error ? err.message : 'Could not list Drive files');
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [tab, hasDrive]);
+  const [pickedName, setPickedName] = useState<string | null>(null);
 
   const onPdf = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -48,18 +38,26 @@ export function ImportDialog({ hasDrive, onClose, onImported }: Props) {
     }
   };
 
-  const onDrive = async (event: FormEvent) => {
-    event.preventDefault();
-    if (!fileId) return;
-    setBusy(true);
+  const onPickFromDrive = async () => {
+    setPicking(true);
     setError(null);
     try {
-      const result = await importDriveFile(fileId);
+      const [config, token] = await Promise.all([getDrivePickerConfig(), getDriveAccessToken()]);
+      const picked = await openDrivePicker({
+        accessToken: token.accessToken,
+        config,
+      });
+      if (!picked) return;
+      setPickedName(picked.name ?? picked.id);
+      setBusy(true);
+      const result = await importDriveFile(picked.id);
       await refresh();
       onImported(result.scheduleId);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Import failed');
       setBusy(false);
+    } finally {
+      setPicking(false);
     }
   };
 
@@ -85,20 +83,19 @@ export function ImportDialog({ hasDrive, onClose, onImported }: Props) {
             </button>
           </form>
         ) : hasDrive ? (
-          <form onSubmit={onDrive}>
-            <p>Choose a Google Doc or PDF from Drive.</p>
-            <select value={fileId} onChange={(event) => setFileId(event.target.value)} required>
-              <option value="">Select a file…</option>
-              {files.map((file) => (
-                <option key={file.id} value={file.id}>
-                  {file.name}
-                </option>
-              ))}
-            </select>
-            <button className="btn primary" type="submit" disabled={busy || !fileId}>
-              {busy ? 'Importing…' : 'Import from Drive'}
+          <div className="import-drive">
+            <p>Browse your Drive and pick a Google Doc or PDF lesson plan.</p>
+            {pickedName && !busy && <p className="auth-hint">Selected: {pickedName}</p>}
+            {busy && <p className="auth-hint">Importing{pickedName ? ` “${pickedName}”` : ''}…</p>}
+            <button
+              className="btn primary"
+              type="button"
+              disabled={busy || picking}
+              onClick={() => void onPickFromDrive()}
+            >
+              {picking ? 'Opening Drive…' : busy ? 'Importing…' : 'Choose from Drive'}
             </button>
-          </form>
+          </div>
         ) : (
           <div>
             <p>Connect Google Drive to browse Docs and PDFs.</p>
@@ -109,7 +106,7 @@ export function ImportDialog({ hasDrive, onClose, onImported }: Props) {
         )}
 
         {error && <p className="inline-error">{error}</p>}
-        <button className="btn ghost" type="button" onClick={onClose}>
+        <button className="btn ghost" type="button" onClick={onClose} disabled={busy}>
           Cancel
         </button>
       </div>
