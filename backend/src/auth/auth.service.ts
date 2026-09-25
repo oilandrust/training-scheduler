@@ -234,7 +234,7 @@ export class AuthService {
             'openid',
             'email',
             'profile',
-            'https://www.googleapis.com/auth/drive.readonly',
+            'https://www.googleapis.com/auth/drive.file',
           ]
         : ['openid', 'email', 'profile'];
     const url = new URL('https://accounts.google.com/o/oauth2/v2/auth');

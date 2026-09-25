@@ -46,7 +46,7 @@ Cookies are `HttpOnly`, `SameSite=Lax`, path `/`. Production nginx already proxi
 
 ## Google Cloud
 
-Use the existing Web client. Add redirect URIs for both callbacks (localhost:3000 and the production host). Login scopes: `openid email profile`. Drive import adds `drive.readonly` and `access_type=offline`.
+Use the existing Web client. Add redirect URIs for both callbacks (localhost:3000 and the production host). Login scopes: `openid email profile`. Drive import adds `drive.file` (Picker-selected files only) and `access_type=offline`.
 
 OAuth consent screen links (public, no auth):
 

@@ -65,8 +65,9 @@ export default function PrivacyPolicy() {
       <p>
         Google sign-in uses Google OAuth. We request basic profile scopes (
         <code>openid</code>, <code>email</code>, <code>profile</code>) for login. If you
-        connect Drive for import, we additionally request read-only Drive access so we can
-        export the document you select. You can revoke access at any time in your{' '}
+        connect Drive for import, we additionally request access to Google Drive files you
+        choose with this app (via the Google Picker) so we can export the document you
+        select. You can revoke access at any time in your{' '}
         <a
           href="https://myaccount.google.com/permissions"
           target="_blank"
